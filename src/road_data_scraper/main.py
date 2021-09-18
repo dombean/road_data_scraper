@@ -9,7 +9,7 @@ from pathlib import Path
 from rich.logging import RichHandler
 
 from road_data_scraper.report.report import run_reports
-from road_data_scraper.steps.download import download
+from road_data_scraper.steps.download import THREAD_POOL, download
 from road_data_scraper.steps.file_handler import dump_config, file_handler
 from road_data_scraper.steps.metadata import get_site_urls, get_sites_by_sensor
 
@@ -24,6 +24,8 @@ logging.basicConfig(
 def run():
 
     start_time = time.time()
+
+    logging.info(f"Using {THREAD_POOL} threads")
 
     package_path = Path(__file__).parent
     os.chdir(package_path)

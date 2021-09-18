@@ -1,17 +1,30 @@
+import ast
+import configparser
 import csv
 import logging
+import multiprocessing
+import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from itertools import repeat
+from pathlib import Path
 
 import pandas as pd
 import requests
 
-# source: https://stackoverflow.com/a/68583332/5994461
+dir_path = Path(__file__).parent.parent
+config_path = os.path.join(dir_path, "config.ini")
 
-THREAD_POOL = 16
+config = configparser.ConfigParser()
+config.read(config_path)
 
-# This is how to create a reusable connection pool with python requests.
+max_threads = ast.literal_eval(config["user_settings"]["max_threads"])
+
+if max_threads:
+    THREAD_POOL = multiprocessing.cpu_count()
+else:
+    THREAD_POOL = multiprocessing.cpu_count() - 1
+
 session = requests.Session()
 session.mount(
     "https://",
