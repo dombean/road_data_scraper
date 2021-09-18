@@ -44,7 +44,6 @@ def run_reports(data, full_path):
         parameters=params,
         report_mode=True,
     )
-    logging.disable(logging.NOTSET)
 
     notebook_files = glob.glob(f"{str(full_path)}/*.ipynb")
     notebook_files = Path(notebook_files[0])
@@ -52,3 +51,4 @@ def run_reports(data, full_path):
     (body, resources) = HTMLExporter(config=c).from_filename(notebook_files)
     fw = FilesWriter(config=c)
     fw.write(body, resources, notebook_name="road_data_report")
+    logging.disable(logging.NOTSET)
