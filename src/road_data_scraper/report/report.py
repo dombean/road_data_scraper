@@ -3,9 +3,6 @@ import logging
 import warnings
 from pathlib import Path
 
-# warnings.simplefilter(action="ignore", category=FutureWarning)
-
-
 with warnings.catch_warnings():
     warnings.simplefilter(action="ignore", category=FutureWarning)
     import papermill as pm
@@ -15,6 +12,7 @@ from nbconvert.preprocessors import TagRemovePreprocessor
 from nbconvert.writers import FilesWriter
 from traitlets.config import Config
 
+warnings.simplefilter(action="ignore")
 c = Config()
 c.TemplateExporter.exclude_input = True
 c.TagRemovePreprocessor.remove_cell_tags = ("remove_cell",)
