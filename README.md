@@ -2,7 +2,7 @@
 
 Scrapes and Cleans WebTRIS Traffic Flow API.
 
-- Python Rewrite of [ONS Road Data Pipeline written in R](https://github.com/datasciencecampus/road-data-dump/tree/r-pipeline). 
+- Python Rewrite of [ONS Road Data Pipeline written in R](https://github.com/datasciencecampus/road-data-dump/tree/r-pipeline).
 - Documentation of ONS Road Data Pipeline: https://datasciencecampus.github.io/road-data-pipeline-documentation/
 
 To use:
