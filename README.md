@@ -9,3 +9,5 @@ To use:
 1) Git clone the repository: `git clone https://github.com/dombean/road_data_scraper.git`
 2) Change Directory inside the road_data_scraper folder: `cd road_data_scraper/`
 3) Install package in editable mode: `pip install -e .`
+
+![Tests](https://github.com/dombean/road_data_scraper/actions/workflows/tests.yml/badge.svg)
