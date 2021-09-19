@@ -33,7 +33,7 @@ def run_reports(data, full_path):
     output_path = f"{full_path}/road_data_report.ipynb"
 
     report_date = str(full_path).split("/")[-2]
-    report_title = f"Road Data Sensors API Scraping Report\n Date: {report_date}"
+    report_title = f"__Road Data Sensors API Scraping Report__\n Date: {report_date}"
 
     params = {"title": report_title, "data": data.to_json()}
 
