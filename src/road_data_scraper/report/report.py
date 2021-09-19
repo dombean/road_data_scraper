@@ -25,14 +25,14 @@ exporter = HTMLExporter(config=c)
 exporter.register_preprocessor(TagRemovePreprocessor(config=c), True)
 
 
-def run_reports(data, full_path):
+def run_reports(data, full_path, start_date, end_date):
 
     logging.info(f"Generating HTML Report at {full_path}")
 
     input_path = "./report/road_data_report_template.ipynb"
     output_path = f"{full_path}/road_data_report.ipynb"
 
-    report_date = str(full_path).split("/")[-2]
+    report_date = f"{start_date} to {end_date}"
     report_title = f"__Road Data Sensors API Scraping Report__\n Date: {report_date}"
 
     params = {"title": report_title, "data": data.to_json()}

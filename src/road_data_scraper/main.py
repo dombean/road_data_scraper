@@ -89,7 +89,7 @@ def run():
     )
 
     if generate_report:
-        run_reports(lookup_df, report_path)
+        run_reports(lookup_df, report_path, start_date, end_date)
 
     dump_config(config, metadata_path)
 
