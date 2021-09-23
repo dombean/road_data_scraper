@@ -8,7 +8,7 @@ Scrapes and Cleans WebTRIS Traffic Flow API.
 - Documentation of ONS Road Data Pipeline: https://datasciencecampus.github.io/road-data-pipeline-documentation/
 - WebTRIS Traffic Flow API: https://webtris.highwaysengland.co.uk/api/swagger/ui/index
 
-# To use:
+# Usage
 
 Download and Install __Python 3.9__; if using Anaconda or Miniconda, create a virtual environment with __Python 3.9__, e.g., `conda create --name py39 python=3.9`
 
