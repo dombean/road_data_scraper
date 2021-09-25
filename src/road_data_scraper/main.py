@@ -33,7 +33,7 @@ def run():
     data_path, metadata_path, report_path = file_handler()
 
     logging.getLogger().addHandler(
-        logging.FileHandler(f"{metadata_path}/road_data_log.txt")
+        logging.FileHandler(f"{metadata_path}/road_data_pipeline.log")
     )
 
     config = configparser.ConfigParser()
