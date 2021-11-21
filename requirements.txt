@@ -5,3 +5,4 @@ papermill>=2.3.3
 jupyterlab>=3.1.12
 panel>=0.12.3
 plotly>=5.1.0
+google-cloud-storage>=1.43.0

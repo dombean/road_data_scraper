@@ -180,3 +180,4 @@ cython_debug/
 
 # Project Based Rules
 output_data/
+*.json

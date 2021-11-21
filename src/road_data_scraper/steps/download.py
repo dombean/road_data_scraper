@@ -1,29 +1,14 @@
-import ast
-import configparser
 import csv
 import logging
 import multiprocessing
-import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from itertools import repeat
-from pathlib import Path
 
 import pandas as pd
 import requests
 
-dir_path = Path(__file__).parent.parent
-config_path = os.path.join(dir_path, "config.ini")
-
-config = configparser.ConfigParser()
-config.read(config_path)
-
-max_threads = ast.literal_eval(config["user_settings"]["max_threads"])
-
-if max_threads:
-    THREAD_POOL = multiprocessing.cpu_count()
-else:
-    THREAD_POOL = multiprocessing.cpu_count() - 1
+THREAD_POOL = multiprocessing.cpu_count()
 
 session = requests.Session()
 session.mount(
@@ -49,13 +34,11 @@ def get(
     northing,
 ):
 
-    # message = (
-    #     "Parallel request of data for use in ONS, datasciencecampus, road-data-dump"
-    # )
+    message = "Parallel request of data for use in ONS. Emerging Platforms Team. @GitHub: dombean/road_data_scraper"
 
-    # headers = {"From": f"{email}", "Message": f"{message}"}
+    headers = {"Message": f"{message}"}
 
-    response = session.get(url)
+    response = session.get(url, headers=headers)
 
     logging.info(
         f"request was completed in {response.elapsed.total_seconds()} seconds [{site_name}] [{response.url}]"

@@ -1,16 +1,17 @@
 import ast
 import configparser
 import logging
-import logging.config
-import os
 import time
-from pathlib import Path
 
 from rich.logging import RichHandler
 
 from road_data_scraper.report.report import run_reports
 from road_data_scraper.steps.download import THREAD_POOL, download
-from road_data_scraper.steps.file_handler import dump_config, file_handler
+from road_data_scraper.steps.file_handler import (
+    dump_config,
+    file_handler,
+    gcp_upload_from_directory,
+)
 from road_data_scraper.steps.metadata import get_site_urls, get_sites_by_sensor
 
 logging.basicConfig(
@@ -21,23 +22,17 @@ logging.basicConfig(
 )
 
 
-def run():
+def run(config):
 
     start_time = time.time()
 
     logging.info(f"Using {THREAD_POOL} threads")
 
-    package_path = Path(__file__).parent
-    os.chdir(package_path)
-
-    data_path, metadata_path, report_path = file_handler()
+    data_path, metadata_path, report_path, run_id_path = file_handler(config)
 
     logging.getLogger().addHandler(
         logging.FileHandler(f"{metadata_path}/road_data_pipeline.log")
     )
-
-    config = configparser.ConfigParser()
-    config.read("./config.ini")
 
     start_date = ast.literal_eval(config["user_settings"]["start_date"])
     end_date = ast.literal_eval(config["user_settings"]["end_date"])
@@ -93,8 +88,24 @@ def run():
 
     dump_config(config, metadata_path)
 
+    gcp_storage = ast.literal_eval(config["user_settings"]["gcp_storage"])
+
+    if gcp_storage:
+
+        gcp_bucket_name = ast.literal_eval(config["user_settings"]["gcp_bucket_name"])
+        gcp_folder_name = ast.literal_eval(config["user_settings"]["gcp_blob_name"])
+        gcp_credentials = ast.literal_eval(config["user_settings"]["gcp_credentials"])
+
+        gcp_upload_from_directory(
+            run_id_path, gcp_bucket_name, gcp_folder_name, gcp_credentials
+        )
+
     logging.info(f"Script Run Time: {(time.time() - start_time)/60} minutes.")
 
 
 if __name__ == "__main__":
-    run()
+
+    config = configparser.ConfigParser()
+    config.read("./config.ini")
+
+    run(config)
