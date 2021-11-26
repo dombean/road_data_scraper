@@ -1,7 +1,9 @@
 import ast
 import configparser
 import logging
+import shutil
 import time
+from pathlib import Path
 
 from rich.logging import RichHandler
 
@@ -99,6 +101,14 @@ def run(config):
         gcp_upload_from_directory(
             run_id_path, gcp_bucket_name, gcp_folder_name, gcp_credentials
         )
+
+    rm_dir = ast.literal_eval(config["user_settings"]["rm_dir"])
+
+    if rm_dir:
+        logging.info(
+            f"Removing {run_id_path[run_id_path.find('output_data/'):].split('/')[1]} folder."
+        )
+        shutil.rmtree(Path(run_id_path))
 
     logging.info(f"Script Run Time: {(time.time() - start_time)/60} minutes.")
 
