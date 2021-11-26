@@ -65,7 +65,8 @@ def gcp_upload_from_directory(
     for local_file in local_paths:
 
         local_file = Path(local_file)
-        remote_path = f"{destination_blob_name}/{local_file}"
+        remote_path = f"{destination_blob_name}/{str(local_file)[str(local_file).find('output_data/'):]}"
+        print(remote_path)
 
         if local_file.is_file():
             blob = bucket.blob(remote_path)
