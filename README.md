@@ -8,7 +8,7 @@ Scrapes and Cleans WebTRIS Traffic Flow API.
 - Documentation of ONS Road Data Pipeline: https://datasciencecampus.github.io/road-data-pipeline-documentation/
 - WebTRIS Traffic Flow API: https://webtris.highwaysengland.co.uk/api/swagger/ui/index
 
-# Usage
+# Developer Usage
 
 Download and Install __Python 3.9__; if using Anaconda or Miniconda, create a virtual environment with __Python 3.9__, e.g., `conda create --name py39 python=3.9`
 
@@ -43,8 +43,11 @@ Options to save output data to a Google Cloud bucket.
 2) Then, in the left side-bar, click on __Marketplace__ and search for __Ubuntu 20.04 LTS (Focal)__, then, click __LAUNCH__.
 3) Name the instance appropriately; click __COMPUTE-OPTIMISED__ (note: leave the defaults -- 4 vCPU, 16 GB memory); under __Firewall__, click __Allow HTTPS traffic__; and finally __CREATE__ the VM instance.
 4) SSH into the VM instance.
-5) Run the following commands: `sudo apt-get update && sudo apt-get dist-upgrade -y && sudo apt-get install python3-pip -y`
-6) Clone the repository using the command: `git clone https://github.com/dombean/road_data_scraper.git`
-7) Pip install the road_data_scraper Package using the command: `sudo pip3 install -e road_data_scraper/`
-8) Upload GCP json credentials file.
-9) Change config.ini accordingly, see README section: __Adjusting the Config File (config.ini)__.
+5) Run the following commands: `sudo apt-get update && sudo apt-get dist-upgrade -y && sudo apt-get install python3-pip -y && sudo apt-get install wget -y`
+6) Pip install the road_data_scraper Package using the command: `pip install road_data_scraper`
+7) Upload GCP json credentials file.
+8) Download the __config.ini__ file using the command: `wget https://github.com/dombean/road_data_scraper/blob/main/src/road_data_scraper/config.ini`
+9) Download the __runner.py__ file using the command: `wget https://raw.githubusercontent.com/dombean/road_data_scraper/main/runner.py`
+10) Open __runner.py__ and put in the absolute path to the __config.ini__ file.
+11) Change config.ini parameters accordingly, see README section: __Adjusting the Config File (config.ini)__.
+12) Run the Road Data Scraper Pipeline using the command: `python3 runner.py`
