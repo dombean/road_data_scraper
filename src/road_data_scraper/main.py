@@ -1,10 +1,13 @@
 import ast
+import calendar
 import configparser
 import logging
 import shutil
 import time
+from datetime import datetime
 from pathlib import Path
 
+from dateutil.relativedelta import relativedelta
 from rich.logging import RichHandler
 
 from road_data_scraper.report.report import run_reports
@@ -38,6 +41,19 @@ def run(config):
 
     start_date = ast.literal_eval(config["user_settings"]["start_date"])
     end_date = ast.literal_eval(config["user_settings"]["end_date"])
+
+    if not start_date and not end_date:
+
+        # 2-month API data lag (date today minus two months)
+        date_object_today = datetime.strptime(time.strftime("%Y-%m"), "%Y-%m")
+        minus_two_months = date_object_today - relativedelta(months=2)
+
+        year, month = map(int, minus_two_months.strftime("%Y %m").split())
+        last_day_of_month = calendar.monthrange(year, month)[1]
+
+        start_date = f"{year}-{month}-01"
+        end_date = f"{year}-{month}-{last_day_of_month}"
+
     test_run = ast.literal_eval(config["user_settings"]["test_run"])
     generate_report = ast.literal_eval(config["user_settings"]["generate_report"])
 
