@@ -47,7 +47,7 @@ Options to save output data to a Google Cloud bucket.
 5) Run the following commands: `sudo apt-get update && sudo apt-get dist-upgrade -y && sudo apt-get install python3-pip -y && sudo apt-get install wget -y`
 6) Pip install the road_data_scraper Package using the command: `pip install road_data_scraper`
 7) Upload GCP json credentials file.
-8) Download the __config.ini__ file using the command: `wget https://github.com/dombean/road_data_scraper/blob/main/src/road_data_scraper/config.ini`
+8) Download the __config.ini__ file using the command: `wget https://raw.githubusercontent.com/dombean/road_data_scraper/main/src/road_data_scraper/config.ini`
 9) Download the __runner.py__ file using the command: `wget https://raw.githubusercontent.com/dombean/road_data_scraper/main/runner.py`
 10) Open __runner.py__ and put in the absolute path to the __config.ini__ file.
 11) Change config.ini parameters accordingly, see README section: __Adjusting the Config File (config.ini)__.
