@@ -5,4 +5,4 @@ from road_data_scraper.main import run
 config = configparser.ConfigParser()
 config.read("")
 
-run(config)
+run(config, api_run=False)
