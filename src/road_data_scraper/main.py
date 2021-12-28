@@ -27,7 +27,17 @@ logging.basicConfig(
 )
 
 
-def run(config):
+def run(config, api_run):
+
+    if api_run:
+
+        def my_ast(*args):
+            return ast.literal_eval(*args)
+
+    else:
+
+        def my_ast(*args):
+            return args[0]
 
     start_time = time.time()
 
@@ -39,8 +49,8 @@ def run(config):
         logging.FileHandler(f"{metadata_path}/road_data_pipeline.log")
     )
 
-    start_date = ast.literal_eval(config["user_settings"]["start_date"])
-    end_date = ast.literal_eval(config["user_settings"]["end_date"])
+    start_date = my_ast(config["user_settings"]["start_date"])
+    end_date = my_ast(config["user_settings"]["end_date"])
 
     if not start_date and not end_date:
 
@@ -54,8 +64,8 @@ def run(config):
         start_date = f"{year}-{month}-01"
         end_date = f"{year}-{month}-{last_day_of_month}"
 
-    test_run = ast.literal_eval(config["user_settings"]["test_run"])
-    generate_report = ast.literal_eval(config["user_settings"]["generate_report"])
+    test_run = my_ast(config["user_settings"]["test_run"])
+    generate_report = my_ast(config["user_settings"]["generate_report"])
 
     logging.info("Getting Road Sensor Lookup Table")
 
@@ -104,21 +114,24 @@ def run(config):
     if generate_report:
         run_reports(lookup_df, report_path, start_date, end_date)
 
-    dump_config(config, metadata_path)
+    if api_run:
+        dump_config(config, metadata_path, api_run=True)
+    else:
+        dump_config(config, metadata_path, api_run=False)
 
-    gcp_storage = ast.literal_eval(config["user_settings"]["gcp_storage"])
+    gcp_storage = my_ast(config["user_settings"]["gcp_storage"])
 
     if gcp_storage:
 
-        gcp_bucket_name = ast.literal_eval(config["user_settings"]["gcp_bucket_name"])
-        gcp_folder_name = ast.literal_eval(config["user_settings"]["gcp_blob_name"])
-        gcp_credentials = ast.literal_eval(config["user_settings"]["gcp_credentials"])
+        gcp_bucket_name = my_ast(config["user_settings"]["gcp_bucket_name"])
+        gcp_folder_name = my_ast(config["user_settings"]["gcp_blob_name"])
+        gcp_credentials = my_ast(config["user_settings"]["gcp_credentials"])
 
         gcp_upload_from_directory(
             run_id_path, gcp_bucket_name, gcp_folder_name, gcp_credentials
         )
 
-    rm_dir = ast.literal_eval(config["user_settings"]["rm_dir"])
+    rm_dir = my_ast(config["user_settings"]["rm_dir"])
 
     if rm_dir:
         logging.info(

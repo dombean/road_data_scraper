@@ -38,13 +38,16 @@ def file_handler(config):
     return data_path, metadata_path, report_path, run_id_path
 
 
-def dump_config(config, full_path):
+def dump_config(config, full_path, api_run):
 
     logging.info(f"Dumping config.ini for Run at {full_path}")
 
-    config_dict = {
-        section: dict(config.items(section)) for section in config.sections()
-    }
+    if api_run:
+        config_dict = {
+            section: dict(config.items(section)) for section in config.sections()
+        }
+    else:
+        config_dict = config
 
     with open(f"{str(full_path)}/config_metadata.txt", "w") as file:
         print(config_dict, file=file)
