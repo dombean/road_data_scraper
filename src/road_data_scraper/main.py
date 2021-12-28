@@ -32,12 +32,12 @@ def run(config, api_run):
     if api_run:
 
         def my_ast(*args):
-            return ast.literal_eval(*args)
+            return args[0]
 
     else:
 
         def my_ast(*args):
-            return args[0]
+            return ast.literal_eval(*args)
 
     start_time = time.time()
 

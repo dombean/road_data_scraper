@@ -43,11 +43,11 @@ def dump_config(config, full_path, api_run):
     logging.info(f"Dumping config.ini for Run at {full_path}")
 
     if api_run:
+        config_dict = config
+    else:
         config_dict = {
             section: dict(config.items(section)) for section in config.sections()
         }
-    else:
-        config_dict = config
 
     with open(f"{str(full_path)}/config_metadata.txt", "w") as file:
         print(config_dict, file=file)
