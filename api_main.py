@@ -21,13 +21,13 @@ def read_docs():
 
 @app.get("/scrape/", tags=["webtris"])
 def scrape_webtris_api(
-    start_date: date,
-    end_date: date,
     test_run: bool,
     generate_report: bool,
     output_path: str,
     rm_dir: bool,
     gcp_storage: bool,
+    start_date: Optional[date] = "",
+    end_date: Optional[date] = "",
     gcp_credentials: Optional[str] = None,
     gcp_bucket_name: Optional[str] = None,
     gcp_blob_name: Optional[str] = "landing_zone",
