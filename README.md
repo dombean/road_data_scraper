@@ -52,3 +52,19 @@ Options to save output data to a Google Cloud bucket.
 10) Open __runner.py__ and put in the absolute path to the __config.ini__ file.
 11) Change config.ini parameters accordingly, see README section: __Adjusting the Config File (config.ini)__.
 12) Run the Road Data Scraper Pipeline using the command: `python3 runner.py`
+
+# Google Cloud Run Setup
+
+Note: Install Docker and Google Cloud SDK.
+- Login to Google Cloud on the command line: ```gcloud auth login```
+- Configure Google Cloud Project on the command line: ```gcloud config set project <project-name>```
+- Configure Docker and Google Cloud Credentials: ```gcloud auth configure-docker```
+
+1) Git clone the repository: `git clone https://github.com/dombean/road_data_scraper.git`
+2) Change Directory inside the road_data_scraper folder: `cd road_data_scraper/`
+3) Download Google Cloud __JSON Credentials__ into the repository.
+4) Build the Docker Image: ```docker build -t road-data-scraper -f Dockerfile .```
+5) Test the Docker Image: ```docker run -it --env PORT=80 -p 80:80 road-data-scraper```
+6) Tag the Docker Image: ```docker tag road-data-scraper eu.gcr.io/<project-name>/road-data-scraper```
+7) Push the Docker Image: ```docker push eu.gcr.io/<project-name>/road-data-scraper```
+8) Deploy the Docker Image on Google Cloud Run: ```gcloud run deploy road-data-scraper --image eu.gcr.io/<project-name>/road-data-scraper --platform managed --region europe-west2 --timeout "3600" --cpu "4" --memory "16Gi" --max-instances "3"```
