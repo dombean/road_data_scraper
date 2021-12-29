@@ -1,3 +1,4 @@
+# Generic
 Dockerfile
 README.md
 *.pyc
@@ -5,3 +6,22 @@ README.md
 *.pyd
 __pycache__
 .pytest_cache
+
+# Project
+LICENSE
+pyproject.toml
+requirements.txt
+requirements_dev.txt
+runner*.py
+setup.cfg
+setup.py
+src/
+tests/
+tox.ini
+.dockerignore
+.git
+.github/
+.gitignore
+.pre-commit-config.yaml
+.tox/
+.vscode/
