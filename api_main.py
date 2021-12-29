@@ -14,12 +14,12 @@ app = FastAPI(
 )
 
 
-@app.get("/")
+@app.get("/", tags=["Road Data Scraper"])
 def read_docs():
     return RedirectResponse("/docs")
 
 
-@app.get("/scrape/", tags=["webtris"])
+@app.get("/scrape/", tags=["Road Data Scraper"])
 def scrape_webtris_api(
     test_run: bool,
     generate_report: bool,
