@@ -50,4 +50,4 @@ def scrape_webtris_api(
 
     run(config, api_run=True)
 
-    return "Success"
+    return "WebTRIS Scraping Pipeline Successfully Executed."
