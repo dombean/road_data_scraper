@@ -8,11 +8,14 @@ from pathlib import Path
 from google.cloud import storage
 
 
-def file_handler(config):
+def file_handler(config, api_run):
 
     run_id = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.%f")
 
-    user_output_path = ast.literal_eval(config["user_settings"]["output_path"])
+    if api_run:
+        user_output_path = config["user_settings"]["output_path"].strip("\"'")
+    else:
+        user_output_path = ast.literal_eval(config["user_settings"]["output_path"])
 
     if not user_output_path:
         raise ValueError("Please provide a valid output directory.")

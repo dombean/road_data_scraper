@@ -43,7 +43,7 @@ def run(config, api_run):
 
     logging.info(f"Using {THREAD_POOL} threads")
 
-    data_path, metadata_path, report_path, run_id_path = file_handler(config)
+    data_path, metadata_path, report_path, run_id_path = file_handler(config, api_run)
 
     logging.getLogger().addHandler(
         logging.FileHandler(f"{metadata_path}/road_data_pipeline.log")
