@@ -63,7 +63,7 @@ def gcp_upload_from_directory(
     gcp_credentials: str,
 ):
 
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = gcp_credentials
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = gcp_credentials.strip("\"'")
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(destination_bucket_name)
     local_paths = glob.glob(directory_path + "/**", recursive=True)
