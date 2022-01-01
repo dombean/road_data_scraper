@@ -41,7 +41,7 @@ def get(
     response = session.get(url, headers=headers)
 
     logging.info(
-        f"request was completed in {response.elapsed.total_seconds()} seconds [{site_name}] [{response.url}]"
+        f"Request was completed in {response.elapsed.total_seconds()} seconds [{site_name}] [{response.url}]"
     )
 
     dataframe = pd.DataFrame.from_dict(response.json()["Rows"])
