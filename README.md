@@ -1,6 +1,6 @@
 # Road Data Scraper
 
-![Tests](https://github.com/dombean/road_data_scraper/actions/workflows/tests.yml/badge.svg)
+![Tests](https://github.com/dombean/road_data_scraper/actions/workflows/road_scraper.yml/badge.svg)
 
 Scrapes and Cleans WebTRIS Traffic Flow API.
 
