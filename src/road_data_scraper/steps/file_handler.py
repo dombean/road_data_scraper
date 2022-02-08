@@ -8,9 +8,16 @@ from pathlib import Path
 from google.cloud import storage
 
 
-def file_handler(config, api_run):
+def file_handler(config, api_run, start_date, end_date):
 
     run_id = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.%f")
+
+    start_date_string = datetime.datetime.strptime(start_date, "%Y-%m-%d").strftime(
+        "%B-%d-%Y"
+    )
+    end_date_string = datetime.datetime.strptime(end_date, "%Y-%m-%d").strftime(
+        "%B-%d-%Y"
+    )
 
     if api_run:
         user_output_path = config["user_settings"]["output_path"].strip("\"'")
@@ -20,10 +27,10 @@ def file_handler(config, api_run):
     if not user_output_path:
         raise ValueError("Please provide a valid output directory.")
 
-    run_id_path_data = f"{user_output_path}/output_data/{run_id}/data/"
-    run_id_path_metadata = f"{user_output_path}/output_data/{run_id}/metadata/"
-    run_id_path_report = f"{user_output_path}/output_data/{run_id}/report/"
-    run_id_path = f"{user_output_path}/output_data/{run_id}/"
+    run_id_path_data = f"{user_output_path}/output_data/{run_id}_{start_date_string}_to_{end_date_string}/data/"
+    run_id_path_metadata = f"{user_output_path}/output_data/{run_id}_{start_date_string}_to_{end_date_string}/metadata/"
+    run_id_path_report = f"{user_output_path}/output_data/{run_id}_{start_date_string}_to_{end_date_string}/report/"
+    run_id_path = f"{user_output_path}/output_data/{run_id}_{start_date_string}_to_{end_date_string}/"
 
     data_path = Path(run_id_path_data)
     metadata_path = Path(run_id_path_metadata)

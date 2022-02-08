@@ -30,12 +30,6 @@ def run(config, api_run):
 
     start_time = time.time()
 
-    data_path, metadata_path, report_path, run_id_path = file_handler(config, api_run)
-
-    logging.getLogger().addHandler(
-        logging.FileHandler(f"{metadata_path}/road_data_pipeline.log")
-    )
-
     if api_run:
 
         def my_ast(*args):
@@ -45,8 +39,6 @@ def run(config, api_run):
 
         def my_ast(*args):
             return ast.literal_eval(*args)
-
-    logging.info(f"Using {THREAD_POOL} threads")
 
     start_date = my_ast(config["user_settings"]["start_date"])
     end_date = my_ast(config["user_settings"]["end_date"])
@@ -62,6 +54,16 @@ def run(config, api_run):
 
         start_date = f"{year}-{month}-01"
         end_date = f"{year}-{month}-{last_day_of_month}"
+
+    data_path, metadata_path, report_path, run_id_path = file_handler(
+        config, api_run, start_date, end_date
+    )
+
+    logging.getLogger().addHandler(
+        logging.FileHandler(f"{metadata_path}/road_data_pipeline.log")
+    )
+
+    logging.info(f"Using {THREAD_POOL} threads")
 
     test_run = my_ast(config["user_settings"]["test_run"])
     generate_report = my_ast(config["user_settings"]["generate_report"])
