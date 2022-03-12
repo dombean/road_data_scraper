@@ -109,7 +109,7 @@ def download(
         metadata (pd.DataFrame): Pandas DataFrame containing Metadata regarding a Road
         Traiff Sensor.
         test_run (bool): If True, will only download a small subset data from WebTRIS Highways England API.
-        run_id_path (pathlib.Path): Path object to run_id directory.
+        run_id_path (Path): Path object to run_id directory.
     """
 
     headers = [

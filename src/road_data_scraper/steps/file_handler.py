@@ -11,7 +11,7 @@ from google.cloud import storage
 def file_handler(config: dict, api_run: bool, start_date: str, end_date: str):
     """
     Creates directories to store scraped data and
-    returns newly created directories as pathlib.Path objects.
+    returns newly created directories as Path objects.
 
     Args:
         config (dict): Configuration file for this run.
@@ -23,10 +23,10 @@ def file_handler(config: dict, api_run: bool, start_date: str, end_date: str):
         ValueError: If user provides a invalid output directory.
 
     Returns:
-        data_path (pathlib.Path): Path object to data directory.
-        metadata_path (pathlib.Path): Path object to metadata directory.
-        report_path (pathlib.Path): Path object to report directory.
-        run_id_path (pathlib.Path): Path object to run_id directory.
+        data_path (Path): Path object to data directory.
+        metadata_path (Path): Path object to metadata directory.
+        report_path (Path): Path object to report directory.
+        run_id_path (Path): Path object to run_id directory.
     """
 
     run_id = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.%f")
@@ -73,7 +73,7 @@ def dump_config(config: dict, metadata_path: Path, api_run: bool):
 
     Args:
         config (dict): Configuration file for this run.
-        metadata_path (pathlib.Path): Path object containing path to metadata output directory.
+        metadata_path (Path): Path object containing path to metadata output directory.
         api_run (bool): True if using FastAPI for this run.
     """
 
