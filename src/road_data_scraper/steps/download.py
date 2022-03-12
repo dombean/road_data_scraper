@@ -4,6 +4,7 @@ import multiprocessing
 import time
 from concurrent.futures import ThreadPoolExecutor
 from itertools import repeat
+from pathlib import Path
 
 import pandas as pd
 import requests
@@ -20,19 +21,39 @@ session.mount(
 
 
 def get(
-    site_name,
-    start_date,
-    end_date,
-    test_run,
-    full_csv_name,
-    url,
-    direction,
-    longitude,
-    latitude,
-    status,
-    easting,
-    northing,
+    site_name: str,
+    start_date: str,
+    end_date: str,
+    test_run: bool,
+    full_csv_name: str,
+    url: str,
+    direction: str,
+    longitude: str,
+    latitude: str,
+    status: str,
+    easting: str,
+    northing: str,
 ):
+    """
+    Downloads a URL from WebTRIS Highways /reports/daily/ endpoint.
+
+    Args:
+        site_name (str): Road Traffic Sensor Name.
+        start_date (str): Start Date; format: %Y-%m-%d.
+        end_date (str): End Date; format: %Y-%m-%d.
+        test_run (bool): If True, will only download a small subset data from WebTRIS Highways England API.
+        full_csv_name (str): Output CSV File Path.
+        url (str): URL of Road Traffic Sensor for a given Site ID.
+        direction (str): Direction of Road Traffic Sensor for a given Site ID.
+        longitude (str): Longitude of Road Traffic Sensor for a given Site ID.
+        latitude (str): Latitude of Road Traffic Sensor for a given Site ID.
+        status (str): Status of Road Traffic Sensor for a given Site ID.
+        easting (str): Easting of Road Traffic Sensor for a given Site ID.
+        northing (str): Northing of Road Traffic Sensor for a given Site ID.
+
+    Returns:
+        _type_: _description_
+    """
 
     message = "Parallel request of data for use in ONS. Emerging Platforms Team. @GitHub: dombean/road_data_scraper"
 
@@ -69,7 +90,27 @@ def get(
     return response
 
 
-def download(site_name, start_date, end_date, metadata, test_run, run_id_path):
+def download(
+    site_name: str,
+    start_date: str,
+    end_date: str,
+    metadata: pd.DataFrame,
+    test_run: bool,
+    run_id_path: Path,
+):
+    """
+    Scrapes data from Highways England WebTRIS API
+    in Parallel.
+
+    Args:
+        site_name (str): Name of Road Traffic Sensor.
+        start_date (str): Start Date; format: %Y-%m-%d.
+        end_date (str): End Date; format: %Y-%m-%d.
+        metadata (pd.DataFrame): Pandas DataFrame containing Metadata regarding a Road
+        Traiff Sensor.
+        test_run (bool): If True, will only download a small subset data from WebTRIS Highways England API.
+        run_id_path (pathlib.Path): Path object to run_id directory.
+    """
 
     headers = [
         "site_name",

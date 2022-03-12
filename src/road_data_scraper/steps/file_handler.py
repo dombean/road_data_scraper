@@ -8,7 +8,26 @@ from pathlib import Path
 from google.cloud import storage
 
 
-def file_handler(config, api_run, start_date, end_date):
+def file_handler(config: dict, api_run: bool, start_date: str, end_date: str):
+    """
+    Creates directories to store scraped data and
+    returns newly created directories as pathlib.Path objects.
+
+    Args:
+        config (dict): Configuration file for this run.
+        api_run (bool): True if using FastAPI for this run.
+        start_date (str): Start Date; format: %Y-%m-%d.
+        end_date (str): End Date; format: %Y-%m-%d.
+
+    Raises:
+        ValueError: If user provides a invalid output directory.
+
+    Returns:
+        data_path (pathlib.Path): Path object to data directory.
+        metadata_path (pathlib.Path): Path object to metadata directory.
+        report_path (pathlib.Path): Path object to report directory.
+        run_id_path (pathlib.Path): Path object to run_id directory.
+    """
 
     run_id = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.%f")
 
@@ -48,9 +67,17 @@ def file_handler(config, api_run, start_date, end_date):
     return data_path, metadata_path, report_path, run_id_path
 
 
-def dump_config(config, full_path, api_run):
+def dump_config(config: dict, metadata_path: Path, api_run: bool):
+    """
+    Saves config file to metadata path.
 
-    logging.info(f"Dumping config.ini for Run at {full_path}")
+    Args:
+        config (dict): Configuration file for this run.
+        metadata_path (pathlib.Path): Path object containing path to metadata output directory.
+        api_run (bool): True if using FastAPI for this run.
+    """
+
+    logging.info(f"Dumping config.ini for Run at {metadata_path}")
 
     if api_run:
         config_dict = config
@@ -59,7 +86,7 @@ def dump_config(config, full_path, api_run):
             section: dict(config.items(section)) for section in config.sections()
         }
 
-    with open(f"{str(full_path)}/config_metadata.txt", "w") as file:
+    with open(f"{str(metadata_path)}/config_metadata.txt", "w") as file:
         print(config_dict, file=file)
 
 
@@ -69,6 +96,16 @@ def gcp_upload_from_directory(
     destination_blob_name: str,
     gcp_credentials: str,
 ):
+    """
+    Uploads entire output directory for a Pipeline Run
+    to a Google Cloud Platform (GCP) Bucket.
+
+    Args:
+        directory_path (str): Output directory for Pipeline Run.
+        destination_bucket_name (str): GCP Bucket Name.
+        destination_blob_name (str): GCP Folder Name.
+        gcp_credentials (str): Path pointing to GCP JSON credentials.
+    """
 
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = gcp_credentials.strip("\"'")
     storage_client = storage.Client()

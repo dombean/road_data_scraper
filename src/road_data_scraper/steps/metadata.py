@@ -4,7 +4,24 @@ import pandas as pd
 import requests
 
 
-def get_site_urls(sensor_tables, start_date, end_date):
+def get_site_urls(sensor_tables: dict, start_date: str, end_date: str):
+    """
+    Generates URLs for each Road Sensor: MIDAS, TAME, TMU.
+
+    Stores each URL in a tuple alongside the sensor's direction, longitude, latitude,
+    status, easting, and northing.
+
+    Args:
+        sensor_tables (Dict[pd.DataFrame]): Keyed by the name of the Road Traffic Sensor,
+        values are Pandas DataFrames containing Metadata regarding each Traffic Sensor.
+        start_date (str): Start Date; format: %Y-%m-%d.
+        end_date (str): End Date; format: %Y-%m-%d.
+
+    Returns:
+        midas_metadata List(tuple): A list containing tuples for each MIDAS sensor URL.
+        tmu_metadata List(tuple): A list containing tuples for each TMU sensor URL.
+        tame_metadata List(tuple): A list containing tuples for each TAME sensor URL.
+    """
 
     start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d").strftime("%d%m%Y")
     end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d").strftime("%d%m%Y")
@@ -88,6 +105,15 @@ def get_site_urls(sensor_tables, start_date, end_date):
 
 
 def status_string_cleaner(x):
+    """
+    Pandas Helper Function to clean "direction" column.
+
+    Args:
+        x (str): Strings in "direction" column.
+
+    Returns:
+        str: Cleaned string.
+    """
     if "eastbound" in str(x):
         return "eastbound"
     elif "northbound" in str(x):
@@ -109,6 +135,15 @@ def status_string_cleaner(x):
 
 
 def name_string_cleaner(x):
+    """
+    Pandas Helper function to clean "name" column.
+
+    Args:
+        x (str): Strings in "name" column.
+
+    Returns:
+        str: Cleaned string.
+    """
     if "MIDAS" in str(x):
         return "MIDAS"
     elif "TMU" in str(x):
@@ -122,6 +157,15 @@ def name_string_cleaner(x):
 
 
 def get_sites_by_sensor():
+    """
+    Queries WebTRIS Highways England /api/v1/sites/ endpoint.
+
+    Returns:
+        sensor_tables (Dict[pd.DataFrame]): Keyed by the name of the Road Traffic Sensor,
+        values are Pandas DataFrames containing Metadata regarding each Traiff Sensor.
+        lookup_df (pd.DataFrame): Pandas DataFrame containing all Road Traffic Sensors.
+
+    """
 
     url = "https://webtris.highwaysengland.co.uk/api/v1/sites"
     response = requests.get(url)
