@@ -26,7 +26,15 @@ logging.basicConfig(
 )
 
 
-def run(config, api_run):
+def run(config: dict, api_run: bool):
+    """
+    Runs the Pipeline to Scrape Road Traffic Sensor Data
+    from Highways England WebTRIS API.
+
+    Args:
+        config (dict): Configuration file for this run.
+        api_run (bool): True if using FastAPI for this run.
+    """
 
     start_time = time.time()
 
