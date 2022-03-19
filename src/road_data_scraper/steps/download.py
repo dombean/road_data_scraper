@@ -112,6 +112,9 @@ def download(
         run_id_path (Path): Path object to run_id directory.
     """
 
+    if site_name not in ("midas", "tame", "tmu"):
+        raise ValueError("Available sites are: midas, tame, tmu.")
+
     headers = [
         "site_name",
         "report_date",

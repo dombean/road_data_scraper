@@ -5,6 +5,7 @@ import logging
 import shutil
 import time
 from datetime import datetime
+from functools import partial
 from pathlib import Path
 
 from dateutil.relativedelta import relativedelta
@@ -93,32 +94,21 @@ def run(config: dict, api_run: bool):
         tmu_metadata = tmu_metadata[1:2]
         tame_metadata = tame_metadata[1:2]
 
-    download(
-        site_name="midas",
+    download_webtris = partial(
+        download,
         start_date=start_date,
         end_date=end_date,
         metadata=midas_metadata,
         test_run=test_run,
         run_id_path=data_path,
     )
+    breakpoint()
 
-    download(
-        site_name="tmu",
-        start_date=start_date,
-        end_date=end_date,
-        metadata=tmu_metadata,
-        test_run=test_run,
-        run_id_path=data_path,
-    )
+    download_webtris(site_name="midas")
 
-    download(
-        site_name="tame",
-        start_date=start_date,
-        end_date=end_date,
-        metadata=tame_metadata,
-        test_run=test_run,
-        run_id_path=data_path,
-    )
+    download_webtris(site_name="tmu")
+
+    download_webtris(site_name="tame")
 
     if generate_report:
         run_reports(lookup_df, report_path, start_date, end_date)
@@ -133,13 +123,11 @@ def run(config: dict, api_run: bool):
     gcp_storage = my_ast(config["user_settings"]["gcp_storage"])
 
     if gcp_storage:
-
-        gcp_bucket_name = my_ast(config["user_settings"]["gcp_bucket_name"])
-        gcp_folder_name = my_ast(config["user_settings"]["gcp_blob_name"])
-        gcp_credentials = my_ast(config["user_settings"]["gcp_credentials"])
-
         gcp_upload_from_directory(
-            run_id_path, gcp_bucket_name, gcp_folder_name, gcp_credentials
+            run_id_path,
+            gcp_bucket_name=my_ast(config["user_settings"]["gcp_bucket_name"]),
+            gcp_folder_name=my_ast(config["user_settings"]["gcp_blob_name"]),
+            gcp_credentials=my_ast(config["user_settings"]["gcp_credentials"]),
         )
 
     rm_dir = my_ast(config["user_settings"]["rm_dir"])
@@ -156,4 +144,4 @@ if __name__ == "__main__":
     config = configparser.ConfigParser()
     config.read("./config.ini")
 
-    run(config)
+    run(config, api_run=False)
