@@ -102,7 +102,6 @@ def run(config: dict, api_run: bool):
         test_run=test_run,
         run_id_path=data_path,
     )
-    breakpoint()
 
     download_webtris(site_name="midas")
 
