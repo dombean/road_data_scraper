@@ -17,7 +17,7 @@ from road_data_scraper.steps.file_handler import (
     file_handler,
     gcp_upload_from_directory,
 )
-from road_data_scraper.steps.metadata import get_site_urls, get_sites_by_sensor
+from road_data_scraper.steps.metadata import get_sensor_urls, get_sites_by_sensor
 
 logging.basicConfig(
     format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
@@ -82,7 +82,7 @@ def run(config: dict, api_run: bool):
     sensor_tables, lookup_df = get_sites_by_sensor()
     lookup_df.to_csv(f"{str(metadata_path)}/road_data_sensor_lookup.csv", index=False)
 
-    midas_metadata, tmu_metadata, tame_metadata = get_site_urls(
+    midas_metadata, tmu_metadata, tame_metadata = get_sensor_urls(
         sensor_tables, start_date, end_date
     )
 
@@ -94,7 +94,7 @@ def run(config: dict, api_run: bool):
         tmu_metadata = tmu_metadata[1:2]
         tame_metadata = tame_metadata[1:2]
 
-    download_webtris = partial(
+    download_partial = partial(
         download,
         start_date=start_date,
         end_date=end_date,
@@ -103,11 +103,9 @@ def run(config: dict, api_run: bool):
         run_id_path=data_path,
     )
 
-    download_webtris(site_name="midas")
-
-    download_webtris(site_name="tmu")
-
-    download_webtris(site_name="tame")
+    download_partial(site_name="midas")
+    download_partial(site_name="tmu")
+    download_partial(site_name="tame")
 
     if generate_report:
         run_reports(lookup_df, report_path, start_date, end_date)

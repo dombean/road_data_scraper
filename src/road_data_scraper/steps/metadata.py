@@ -7,7 +7,7 @@ import requests
 BASE_URL = "https://webtris.highwaysengland.co.uk/api/v1/"
 
 
-def create_sensor_dataframe(
+def create_sensor_metadata_tuples(
     sensor_tables: dict, start_date: str, end_date: str, sensor_name: str = None
 ):
     """
@@ -48,7 +48,7 @@ def create_sensor_dataframe(
     return sensor_metadata
 
 
-def get_site_urls(sensor_tables: dict, start_date: str, end_date: str):
+def get_sensor_urls(sensor_tables: dict, start_date: str, end_date: str):
     """
     Generates URLs for each Road Sensor: MIDAS, TAME, TMU.
 
@@ -67,8 +67,8 @@ def get_site_urls(sensor_tables: dict, start_date: str, end_date: str):
         tame_metadata List(tuple): A list containing tuples which holds metadata for each TAME sensor URL.
     """
 
-    create_sensor_dataframe_partial = partial(
-        create_sensor_dataframe,
+    create_sensor_metadata_tuples_partial = partial(
+        create_sensor_metadata_tuples,
         sensor_tables=sensor_tables,
         start_date=datetime.datetime.strptime(start_date, "%Y-%m-%d").strftime(
             "%d%m%Y"
@@ -76,14 +76,14 @@ def get_site_urls(sensor_tables: dict, start_date: str, end_date: str):
         end_date=datetime.datetime.strptime(end_date, "%Y-%m-%d").strftime("%d%m%Y"),
     )
 
-    midas_metadata = create_sensor_dataframe_partial(sensor_name="midas")
-    tmu_metadata = create_sensor_dataframe_partial(sensor_name="tmu")
-    tame_metadata = create_sensor_dataframe_partial(sensor_name="tame")
+    midas_metadata = create_sensor_metadata_tuples_partial(sensor_name="midas")
+    tmu_metadata = create_sensor_metadata_tuples_partial(sensor_name="tmu")
+    tame_metadata = create_sensor_metadata_tuples_partial(sensor_name="tame")
 
     return midas_metadata, tmu_metadata, tame_metadata
 
 
-def status_string_cleaner(record):
+def direction_string_cleaner(record):
     """
     Pandas Helper Function to clean a record in the "direction" column.
 
@@ -158,7 +158,7 @@ def get_sites_by_sensor():
     )
 
     lookup_df["direction"] = lookup_df["direction"].str.lower()
-    lookup_df["direction"] = lookup_df["direction"].apply(status_string_cleaner)
+    lookup_df["direction"] = lookup_df["direction"].apply(direction_string_cleaner)
 
     lookup_df["name"] = lookup_df["name"].apply(name_string_cleaner)
 
