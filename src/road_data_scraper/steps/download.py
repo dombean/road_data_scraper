@@ -56,7 +56,6 @@ def get(
     """
 
     message = "Parallel request of data for use in ONS. Emerging Platforms Team. @GitHub: dombean/road_data_scraper"
-
     headers = {"Message": f"{message}"}
 
     response = session.get(url, headers=headers)

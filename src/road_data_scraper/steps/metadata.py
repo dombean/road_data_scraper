@@ -1,7 +1,51 @@
 import datetime
+from functools import partial
 
 import pandas as pd
 import requests
+
+BASE_URL = "https://webtris.highwaysengland.co.uk/api/v1/"
+
+
+def create_sensor_dataframe(
+    sensor_tables: dict, start_date: str, end_date: str, sensor_name: str = None
+):
+    """
+    Helper Function that returns a list of tuples containing metadata
+    regarding a particular Road Traffic Sensor URL/Site ID.
+
+    Args:
+        sensor_tables (Dict[pd.DataFrame]): Keyed by the name of the Road Traffic Sensor,
+        values are Pandas DataFrames containing Metadata regarding each Traffic Sensor.
+        start_date (str): Start Date; format: %Y-%m-%d.
+        end_date (str): End Date; format: %Y-%m-%d.
+
+    Returns:
+        sensor_metadata List(tuple): A list containing tuples which holds metadata
+        regarding each Road Traffic Sensor URL/Site ID.
+    """
+
+    if sensor_name not in ("midas", "tame", "tmu"):
+        raise ValueError("Available Sensors are: midas, tame, tmu.")
+
+    sensor_ids = list(sensor_tables[sensor_name]["id"])
+    sensor_urls = [
+        f"{BASE_URL}reports/{start_date}/to/{end_date}/daily?sites={site}&page=1&page_size=40000"
+        for site in sensor_ids
+    ]
+
+    sensor_metadata = list(
+        zip(
+            sensor_urls,
+            sensor_tables[sensor_name]["direction"],
+            sensor_tables[sensor_name]["longitude"],
+            sensor_tables[sensor_name]["latitude"],
+            sensor_tables[sensor_name]["status"],
+            sensor_tables[sensor_name]["easting"],
+            sensor_tables[sensor_name]["northing"],
+        )
+    )
+    return sensor_metadata
 
 
 def get_site_urls(sensor_tables: dict, start_date: str, end_date: str):
@@ -18,147 +62,82 @@ def get_site_urls(sensor_tables: dict, start_date: str, end_date: str):
         end_date (str): End Date; format: %Y-%m-%d.
 
     Returns:
-        midas_metadata List(tuple): A list containing tuples for each MIDAS sensor URL.
-        tmu_metadata List(tuple): A list containing tuples for each TMU sensor URL.
-        tame_metadata List(tuple): A list containing tuples for each TAME sensor URL.
+        midas_metadata List(tuple): A list containing tuples which holds metadata for each MIDAS sensor URL.
+        tmu_metadata List(tuple): A list containing tuples which holds metadata for each TMU sensor URL.
+        tame_metadata List(tuple): A list containing tuples which holds metadata for each TAME sensor URL.
     """
 
-    start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d").strftime("%d%m%Y")
-    end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d").strftime("%d%m%Y")
-
-    midas_id = list(sensor_tables["midas"]["id"])
-    midas_urls = [
-        f"https://webtris.highwaysengland.co.uk/api/v1/reports/{start_date}/to/{end_date}/daily?sites={site}&page=1&page_size=40000"
-        for site in midas_id
-    ]
-
-    midas_direction = sensor_tables["midas"]["direction"]
-    midas_longitude = sensor_tables["midas"]["longitude"]
-    midas_latitude = sensor_tables["midas"]["latitude"]
-    midas_status = sensor_tables["midas"]["status"]
-    midas_easting = sensor_tables["midas"]["easting"]
-    midas_northing = sensor_tables["midas"]["northing"]
-
-    midas_metadata = list(
-        zip(
-            midas_urls,
-            midas_direction,
-            midas_longitude,
-            midas_latitude,
-            midas_status,
-            midas_easting,
-            midas_northing,
-        )
+    create_sensor_dataframe_partial = partial(
+        create_sensor_dataframe,
+        sensor_tables=sensor_tables,
+        start_date=datetime.datetime.strptime(start_date, "%Y-%m-%d").strftime(
+            "%d%m%Y"
+        ),
+        end_date=datetime.datetime.strptime(end_date, "%Y-%m-%d").strftime("%d%m%Y"),
     )
 
-    tmu_id = list(sensor_tables["tmu"]["id"])
-    tmu_urls = [
-        f"https://webtris.highwaysengland.co.uk/api/v1/reports/{start_date}/to/{end_date}/daily?sites={site}&page=1&page_size=40000"
-        for site in tmu_id
-    ]
-
-    tmu_direction = sensor_tables["tmu"]["direction"]
-    tmu_longitude = sensor_tables["tmu"]["longitude"]
-    tmu_latitude = sensor_tables["tmu"]["latitude"]
-    tmu_status = sensor_tables["tmu"]["status"]
-    tmu_easting = sensor_tables["tmu"]["easting"]
-    tmu_northing = sensor_tables["tmu"]["northing"]
-
-    tmu_metadata = list(
-        zip(
-            tmu_urls,
-            tmu_direction,
-            tmu_longitude,
-            tmu_latitude,
-            tmu_status,
-            tmu_easting,
-            tmu_northing,
-        )
-    )
-
-    tame_id = list(sensor_tables["tame"]["id"])
-    tame_urls = [
-        f"https://webtris.highwaysengland.co.uk/api/v1/reports/{start_date}/to/{end_date}/daily?sites={site}&page=1&page_size=40000"
-        for site in tame_id
-    ]
-
-    tame_direction = sensor_tables["tame"]["direction"]
-    tame_longitude = sensor_tables["tame"]["longitude"]
-    tame_latitude = sensor_tables["tame"]["latitude"]
-    tame_status = sensor_tables["tame"]["status"]
-    tame_easting = sensor_tables["tame"]["easting"]
-    tame_northing = sensor_tables["tame"]["northing"]
-
-    tame_metadata = list(
-        zip(
-            tame_urls,
-            tame_direction,
-            tame_longitude,
-            tame_latitude,
-            tame_status,
-            tame_easting,
-            tame_northing,
-        )
-    )
+    midas_metadata = create_sensor_dataframe_partial(sensor_name="midas")
+    tmu_metadata = create_sensor_dataframe_partial(sensor_name="tmu")
+    tame_metadata = create_sensor_dataframe_partial(sensor_name="tame")
 
     return midas_metadata, tmu_metadata, tame_metadata
 
 
-def status_string_cleaner(x):
+def status_string_cleaner(record):
     """
-    Pandas Helper Function to clean "direction" column.
+    Pandas Helper Function to clean a record in the "direction" column.
 
     Args:
-        x (str): Strings in "direction" column.
+        record (str): Strings in "direction" column.
 
     Returns:
         str: Cleaned string.
     """
-    if "eastbound" in str(x):
+    if "eastbound" in str(record):
         return "eastbound"
-    elif "northbound" in str(x):
+    elif "northbound" in str(record):
         return "northbound"
-    elif "southbound" in str(x):
+    elif "southbound" in str(record):
         return "southbound"
-    elif "westbound" in str(x):
+    elif "westbound" in str(record):
         return "westbound"
-    elif "clockwise" in str(x):
+    elif "clockwise" in str(record):
         return "clockwise"
-    elif "anti-clockwise" in str(x):
+    elif "anti-clockwise" in str(record):
         return "clockwise"
-    elif "legacy site" in str(x):
+    elif "legacy site" in str(record):
         return "legacy site"
-    elif "on connector" in str(x):
+    elif "on connector" in str(record):
         return "carriageway connector"
     else:
-        return x
+        return record
 
 
-def name_string_cleaner(x):
+def name_string_cleaner(record):
     """
     Pandas Helper function to clean "name" column.
 
     Args:
-        x (str): Strings in "name" column.
+        record (str): Strings in "name" column.
 
     Returns:
         str: Cleaned string.
     """
-    if "MIDAS" in str(x):
+    if "MIDAS" in str(record):
         return "MIDAS"
-    elif "TMU" in str(x):
+    elif "TMU" in str(record):
         return "TMU"
-    elif "TAME" in str(x):
+    elif "TAME" in str(record):
         return "TAME"
-    elif "Legacy Site" in str(x):
+    elif "Legacy Site" in str(record):
         return "Legacy Site"
     else:
-        return x
+        return record
 
 
 def get_sites_by_sensor():
     """
-    Queries WebTRIS Highways England /api/v1/sites/ endpoint.
+    Queries WebTRIS Highways England /sites/ endpoint.
 
     Returns:
         sensor_tables (Dict[pd.DataFrame]): Keyed by the name of the Road Traffic Sensor,
@@ -167,8 +146,7 @@ def get_sites_by_sensor():
 
     """
 
-    url = "https://webtris.highwaysengland.co.uk/api/v1/sites"
-    response = requests.get(url)
+    response = requests.get(f"{BASE_URL}sites")
 
     lookup_df = pd.DataFrame.from_dict(response.json()["sites"])
     lookup_df.columns = [col.lower() for col in lookup_df.columns]
