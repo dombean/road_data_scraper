@@ -46,25 +46,22 @@ def file_handler(config: dict, api_run: bool, start_date: str, end_date: str):
     if not user_output_path:
         raise ValueError("Please provide a valid output directory.")
 
-    run_id_path_data = f"{user_output_path}/output_data/{run_id}_{start_date_string}_to_{end_date_string}/data/"
-    run_id_path_metadata = f"{user_output_path}/output_data/{run_id}_{start_date_string}_to_{end_date_string}/metadata/"
-    run_id_path_report = f"{user_output_path}/output_data/{run_id}_{start_date_string}_to_{end_date_string}/report/"
     run_id_path = f"{user_output_path}/output_data/{run_id}_{start_date_string}_to_{end_date_string}/"
 
-    data_path = Path(run_id_path_data)
-    metadata_path = Path(run_id_path_metadata)
-    report_path = Path(run_id_path_report)
+    run_id_path_data = Path(f"{run_id_path}data/")
+    run_id_path_metadata = Path(f"{run_id_path}metadata/")
+    run_id_path_report = Path(f"{run_id_path}report/")
 
-    logging.info(f"Making Data Directory at: {data_path}")
-    data_path.mkdir(parents=True, exist_ok=True)
+    logging.info(f"Making Data Directory at: {run_id_path_data}")
+    run_id_path_data.mkdir(parents=True, exist_ok=True)
 
-    logging.info(f"Making Metadata Directory at: {metadata_path}")
-    metadata_path.mkdir(parents=True, exist_ok=True)
+    logging.info(f"Making Metadata Directory at: {run_id_path_metadata}")
+    run_id_path_metadata.mkdir(parents=True, exist_ok=True)
 
-    logging.info(f"Making Report Directory at: {report_path}")
-    report_path.mkdir(parents=True, exist_ok=True)
+    logging.info(f"Making Report Directory at: {run_id_path_report}")
+    run_id_path_report.mkdir(parents=True, exist_ok=True)
 
-    return data_path, metadata_path, report_path, run_id_path
+    return run_id_path_data, run_id_path_metadata, run_id_path_report, run_id_path
 
 
 def dump_config(config: dict, metadata_path: Path, api_run: bool):
