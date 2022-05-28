@@ -37,6 +37,8 @@ def create_sensor_metadata_tuples(
     sensor_metadata = list(
         zip(
             sensor_urls,
+            sensor_tables[sensor_name]["id"],
+            sensor_tables[sensor_name]["name"],
             sensor_tables[sensor_name]["direction"],
             sensor_tables[sensor_name]["longitude"],
             sensor_tables[sensor_name]["latitude"],
@@ -124,11 +126,11 @@ def name_string_cleaner(record):
         str: Cleaned string.
     """
     if "MIDAS" in str(record):
-        return "MIDAS"
+        return "midas"
     elif "TMU" in str(record):
-        return "TMU"
+        return "tmu"
     elif "TAME" in str(record):
-        return "TAME"
+        return "tame"
     elif "Legacy Site" in str(record):
         return "Legacy Site"
     else:
@@ -141,7 +143,7 @@ def get_sites_by_sensor():
 
     Returns:
         sensor_tables (Dict[pd.DataFrame]): Keyed by the name of the Road Traffic Sensor,
-        values are Pandas DataFrames containing Metadata regarding each Traiff Sensor.
+        values are Pandas DataFrames containing Metadata regarding each Traffic Sensor.
         lookup_df (pd.DataFrame): Pandas DataFrame containing all Road Traffic Sensors.
 
     """
@@ -162,11 +164,11 @@ def get_sites_by_sensor():
 
     lookup_df["name"] = lookup_df["name"].apply(name_string_cleaner)
 
-    midas_df = lookup_df.query("name.str.contains('MIDAS', case = True)")
-    tmu_df = lookup_df.query("name.str.contains('TMU', case = True)")
-    tame_df = lookup_df.query("name.str.contains('TAME', case = True)")
+    midas_df = lookup_df.query("name.str.contains('midas', case = True)")
+    tmu_df = lookup_df.query("name.str.contains('tmu', case = True)")
+    tame_df = lookup_df.query("name.str.contains('tame', case = True)")
     other_df = lookup_df.query(
-        "name.str.contains('MIDAS|TAME|TMU', case = True)==False"
+        "name.str.contains('midas|tmu|tame', case = True)==False"
     )
 
     sensor_tables = {
@@ -175,5 +177,4 @@ def get_sites_by_sensor():
         "tame": tame_df,
         "other": other_df,
     }
-
     return sensor_tables, lookup_df

@@ -98,14 +98,13 @@ def run(config: dict, api_run: bool):
         download,
         start_date=start_date,
         end_date=end_date,
-        metadata=midas_metadata,
         test_run=test_run,
         run_id_path=data_path,
     )
 
-    download_partial(site_name="midas")
-    download_partial(site_name="tmu")
-    download_partial(site_name="tame")
+    download_partial(site_name="midas", metadata=midas_metadata)
+    download_partial(site_name="tmu", metadata=tmu_metadata)
+    download_partial(site_name="tame", metadata=tame_metadata)
 
     if generate_report:
         run_reports(lookup_df, report_path, start_date, end_date)

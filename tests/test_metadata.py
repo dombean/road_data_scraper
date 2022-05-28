@@ -39,6 +39,14 @@ class TestMetadata(unittest.TestCase):
         ]
 
         data_tame = [
+            [6304,"TAME",30360220,-0.960508,50.986164,"Active","southbound",473059,121266],
+            [6305,"TAME",30360221,-0.961806,50.985430,"Active","northbound",472969,121183],
+            [6310,"TAME",30360229,-0.832786,51.298988,"Active","westbound",481472,156187],
+            [6311,"TAME",30360230,-1.035767,51.262403,"Active","eastbound",467374,151913],
+            [6312,"TAME",30360231,-1.037151,51.262037,"Active","westbound",467278,151871],
+        ]
+
+        data_tmu = [
             [7236,"TMU","5607/1",-1.338882,51.100315,"Active","northbound",446387,133654],
             [7237,"TMU","5606/2",-1.341841,51.103119,"Active","southbound",446177,133964],
             [7238,"TMU","5606/1",-1.341654,51.103190,"Active","southbound",446190,133972],
@@ -46,13 +54,6 @@ class TestMetadata(unittest.TestCase):
             [7240,"TMU","5601/1",-1.340046,51.173915,"Active","northbound",446232,141838],
         ]
 
-        data_tmu = [
-            [6304,"TAME",30360220,-0.960508,50.986164,"Active","southbound",473059,121266],
-            [6305,"TAME",30360221,-0.961806,50.985430,"Active","northbound",472969,121183],
-            [6310,"TAME",30360229,-0.832786,51.298988,"Active","westbound",481472,156187],
-            [6311,"TAME",30360230,-1.035767,51.262403,"Active","eastbound",467374,151913],
-            [6312,"TAME",30360231,-1.037151,51.262037,"Active","westbound",467278,151871],
-        ]
         # fmt:on
 
         self.sensor_tables = {
@@ -73,6 +74,8 @@ class TestMetadata(unittest.TestCase):
         expected_result_midas = [
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=1&page=1&page_size=40000",
+                1,
+                "MIDAS",
                 "westbound",
                 -0.52038,
                 51.493012,
@@ -82,6 +85,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=2&page=1&page_size=40000",
+                2,
+                "MIDAS",
                 "southbound",
                 -0.320275,
                 52.535158,
@@ -91,6 +96,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=3&page=1&page_size=40000",
+                3,
+                "MIDAS",
                 "northbound",
                 -2.175138,
                 52.175652,
@@ -100,6 +107,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=4&page=1&page_size=40000",
+                4,
+                "MIDAS",
                 "westbound",
                 -1.392374,
                 50.960359,
@@ -109,6 +118,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=5&page=1&page_size=40000",
+                5,
+                "MIDAS",
                 "clockwise",
                 0.283162,
                 51.575617,
@@ -118,13 +129,15 @@ class TestMetadata(unittest.TestCase):
             ),
         ]
 
-        actual_result_tame = create_sensor_metadata_tuples(
-            self.sensor_tables, start_date, end_date, sensor_name="tame"
+        actual_result_tmu = create_sensor_metadata_tuples(
+            self.sensor_tables, start_date, end_date, sensor_name="tmu"
         )
 
-        expected_result_tame = [
+        expected_result_tmu = [
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=7236&page=1&page_size=40000",
+                7236,
+                "TMU",
                 "northbound",
                 -1.338882,
                 51.100315,
@@ -134,6 +147,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=7237&page=1&page_size=40000",
+                7237,
+                "TMU",
                 "southbound",
                 -1.341841,
                 51.103119,
@@ -143,6 +158,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=7238&page=1&page_size=40000",
+                7238,
+                "TMU",
                 "southbound",
                 -1.341654,
                 51.10319,
@@ -152,6 +169,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=7239&page=1&page_size=40000",
+                7239,
+                "TMU",
                 "northbound",
                 -1.339803,
                 51.173895,
@@ -161,6 +180,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=7240&page=1&page_size=40000",
+                7240,
+                "TMU",
                 "northbound",
                 -1.340046,
                 51.173915,
@@ -170,13 +191,15 @@ class TestMetadata(unittest.TestCase):
             ),
         ]
 
-        actual_result_tmu = create_sensor_metadata_tuples(
-            self.sensor_tables, start_date, end_date, sensor_name="tmu"
+        actual_result_tame = create_sensor_metadata_tuples(
+            self.sensor_tables, start_date, end_date, sensor_name="tame"
         )
 
-        expected_result_tmu = [
+        expected_result_tame = [
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=6304&page=1&page_size=40000",
+                6304,
+                "TAME",
                 "southbound",
                 -0.960508,
                 50.986164,
@@ -186,6 +209,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=6305&page=1&page_size=40000",
+                6305,
+                "TAME",
                 "northbound",
                 -0.961806,
                 50.98543,
@@ -195,6 +220,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=6310&page=1&page_size=40000",
+                6310,
+                "TAME",
                 "westbound",
                 -0.832786,
                 51.298988,
@@ -204,6 +231,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=6311&page=1&page_size=40000",
+                6311,
+                "TAME",
                 "eastbound",
                 -1.035767,
                 51.262403,
@@ -213,6 +242,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=6312&page=1&page_size=40000",
+                6312,
+                "TAME",
                 "westbound",
                 -1.037151,
                 51.262037,
@@ -255,6 +286,8 @@ class TestMetadata(unittest.TestCase):
         expected_result_midas = [
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=1&page=1&page_size=40000",
+                1,
+                "MIDAS",
                 "westbound",
                 -0.52038,
                 51.493012,
@@ -264,6 +297,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=2&page=1&page_size=40000",
+                2,
+                "MIDAS",
                 "southbound",
                 -0.320275,
                 52.535158,
@@ -273,6 +308,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=3&page=1&page_size=40000",
+                3,
+                "MIDAS",
                 "northbound",
                 -2.175138,
                 52.175652,
@@ -282,6 +319,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=4&page=1&page_size=40000",
+                4,
+                "MIDAS",
                 "westbound",
                 -1.392374,
                 50.960359,
@@ -291,6 +330,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=5&page=1&page_size=40000",
+                5,
+                "MIDAS",
                 "clockwise",
                 0.283162,
                 51.575617,
@@ -300,9 +341,11 @@ class TestMetadata(unittest.TestCase):
             ),
         ]
 
-        expected_result_tame = [
+        expected_result_tmu = [
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=7236&page=1&page_size=40000",
+                7236,
+                "TMU",
                 "northbound",
                 -1.338882,
                 51.100315,
@@ -312,6 +355,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=7237&page=1&page_size=40000",
+                7237,
+                "TMU",
                 "southbound",
                 -1.341841,
                 51.103119,
@@ -321,6 +366,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=7238&page=1&page_size=40000",
+                7238,
+                "TMU",
                 "southbound",
                 -1.341654,
                 51.10319,
@@ -330,6 +377,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=7239&page=1&page_size=40000",
+                7239,
+                "TMU",
                 "northbound",
                 -1.339803,
                 51.173895,
@@ -339,6 +388,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=7240&page=1&page_size=40000",
+                7240,
+                "TMU",
                 "northbound",
                 -1.340046,
                 51.173915,
@@ -348,9 +399,11 @@ class TestMetadata(unittest.TestCase):
             ),
         ]
 
-        expected_result_tmu = [
+        expected_result_tame = [
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=6304&page=1&page_size=40000",
+                6304,
+                "TAME",
                 "southbound",
                 -0.960508,
                 50.986164,
@@ -360,6 +413,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=6305&page=1&page_size=40000",
+                6305,
+                "TAME",
                 "northbound",
                 -0.961806,
                 50.98543,
@@ -369,6 +424,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=6310&page=1&page_size=40000",
+                6310,
+                "TAME",
                 "westbound",
                 -0.832786,
                 51.298988,
@@ -378,6 +435,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=6311&page=1&page_size=40000",
+                6311,
+                "TAME",
                 "eastbound",
                 -1.035767,
                 51.262403,
@@ -387,6 +446,8 @@ class TestMetadata(unittest.TestCase):
             ),
             (
                 "https://webtris.highwaysengland.co.uk/api/v1/reports/01012020/to/31012020/daily?sites=6312&page=1&page_size=40000",
+                6312,
+                "TAME",
                 "westbound",
                 -1.037151,
                 51.262037,
@@ -397,8 +458,8 @@ class TestMetadata(unittest.TestCase):
         ]
 
         assert actual_result_midas == expected_result_midas
-        assert actual_result_tmu == expected_result_tmu
         assert actual_result_tame == expected_result_tame
+        assert actual_result_tmu == expected_result_tmu
 
     def test_name_string_cleaner(self):
         test_df = pd.DataFrame(
@@ -424,17 +485,17 @@ class TestMetadata(unittest.TestCase):
 
         expected_df = pd.DataFrame(
             [
-                "MIDAS",
-                "TAME",
-                "TMU",
+                "midas",
+                "tame",
+                "tmu",
                 "Legacy Site",
-                "MIDAS",
-                "TAME",
-                "TMU",
+                "midas",
+                "tame",
+                "tmu",
                 "Legacy Site",
-                "MIDAS",
-                "TAME",
-                "TMU",
+                "midas",
+                "tame",
+                "tmu",
                 "Legacy Site",
                 "OTHER",
             ],
@@ -573,27 +634,27 @@ class TestMetadata(unittest.TestCase):
 
         # fmt:off
         expected_midas_data = [
-            [10166, "MIDAS", "M62/2255A", -1.38877157, 53.70834533, "Active", "eastbound", "440444", "423718"],
-            [17690, "MIDAS", "M6/6700B", -2.33908529, 53.14538011, "Active", "southbound", "377417", "360967"],
-            [5129, "MIDAS", "A14/2092B",  1.32505739, 51.96946952, "Inactive", "westbound", "628493", "235331"],
-            [4334, "MIDAS", "M56/8100A", -2.26879705, 53.39523144, "Active", "westbound", "382223", "388743"],
-            [1469, "MIDAS", "M4/2604A", -0.89874942, 51.42305321, "Inactive", "westbound", "476666", "169913"],
+            [10166, "midas", "M62/2255A", -1.38877157, 53.70834533, "Active", "eastbound", "440444", "423718"],
+            [17690, "midas", "M6/6700B", -2.33908529, 53.14538011, "Active", "southbound", "377417", "360967"],
+            [5129, "midas", "A14/2092B",  1.32505739, 51.96946952, "Inactive", "westbound", "628493", "235331"],
+            [4334, "midas", "M56/8100A", -2.26879705, 53.39523144, "Active", "westbound", "382223", "388743"],
+            [1469, "midas", "M4/2604A", -0.89874942, 51.42305321, "Inactive", "westbound", "476666", "169913"],
         ]
 
         expected_tmu_data = [
-            [8423, "TMU", "7560/2", -2.10729218, 52.97868121, "Active", "eastbound", "392893", "342374"],
-            [8664, "TMU", "9037/1", -2.54329844, 53.57281888, "Active", "northbound", "364120", "408604"],
-            [8970, "TMU", "5897/2",  0.70807359, 51.35094186, "Active", "northbound", "588672", "164799"],
-            [8380, "TMU", "9337/1", -1.32009724, 54.42379872, "Active", "southbound", "444213", "503363"],
-            [9333, "TMU", "9934/2", -0.29678837, 52.3343634 , "Active", "eastbound", "516148", "272061"],
+            [8423, "tmu", "7560/2", -2.10729218, 52.97868121, "Active", "eastbound", "392893", "342374"],
+            [8664, "tmu", "9037/1", -2.54329844, 53.57281888, "Active", "northbound", "364120", "408604"],
+            [8970, "tmu", "5897/2",  0.70807359, 51.35094186, "Active", "northbound", "588672", "164799"],
+            [8380, "tmu", "9337/1", -1.32009724, 54.42379872, "Active", "southbound", "444213", "503363"],
+            [9333, "tmu", "9934/2", -0.29678837, 52.3343634 , "Active", "eastbound", "516148", "272061"],
         ]
 
         expected_tame_data = [
-            [7155, "TAME", "30361690", -2.67727572, 54.65311085, "Active", "westbound", "356400", "528878"],
-            [6345, "TAME", "30360279", -1.87992753, 50.81476837, "Active", "eastbound", "408555", "101699"],
-            [6367, "TAME", "30360308", -1.31008491, 51.45740394, "Active", "southbound", "448030", "173384"],
-            [6870, "TAME", "30361350", -1.73524957, 53.74600125, "Active", "northbound", "417558", "427767"],
-            [6894, "TAME", "30360915", -2.72627823, 52.235112  , "Active", "southbound", "350498", "259905"],
+            [7155, "tame", "30361690", -2.67727572, 54.65311085, "Active", "westbound", "356400", "528878"],
+            [6345, "tame", "30360279", -1.87992753, 50.81476837, "Active", "eastbound", "408555", "101699"],
+            [6367, "tame", "30360308", -1.31008491, 51.45740394, "Active", "southbound", "448030", "173384"],
+            [6870, "tame", "30361350", -1.73524957, 53.74600125, "Active", "northbound", "417558", "427767"],
+            [6894, "tame", "30360915", -2.72627823, 52.235112  , "Active", "southbound", "350498", "259905"],
         ]
 
         expected_other_data = [

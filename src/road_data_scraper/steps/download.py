@@ -27,6 +27,8 @@ def get(
     test_run: bool,
     full_csv_name: str,
     url: str,
+    site_id: str,
+    site_type: str,
     direction: str,
     longitude: str,
     latitude: str,
@@ -44,6 +46,8 @@ def get(
         test_run (bool): If True, will only download a small subset data from WebTRIS Highways England API.
         full_csv_name (str): Output CSV File Path.
         url (str): URL of Road Traffic Sensor for a given Site ID.
+        site_id (str): Unique ID of Road Traffic Sensor.
+        site_type (str): Road Traffic Sensor Type: midas, tmu, tame.
         direction (str): Direction of Road Traffic Sensor for a given Site ID.
         longitude (str): Longitude of Road Traffic Sensor for a given Site ID.
         latitude (str): Latitude of Road Traffic Sensor for a given Site ID.
@@ -65,12 +69,14 @@ def get(
     )
 
     dataframe = pd.DataFrame.from_dict(response.json()["Rows"])
+    dataframe.insert(0, "site_id", site_id)
 
     dataframe = dataframe.assign(
-        direction=direction,
         longitude=longitude,
         latitude=latitude,
         status=status,
+        type=site_type,
+        direction=direction,
         easting=easting,
         northing=northing,
     )
@@ -115,34 +121,36 @@ def download(
         raise ValueError("Available sites are: midas, tame, tmu.")
 
     headers = [
+        "site_id",
         "site_name",
         "report_date",
-        "time_period_ending",
-        "time_interval",
-        "0_520_cm",
-        "521_660_cm",
-        "661_1160_cm",
-        "1160+_cm",
-        "0_10_mph",
-        "11_15_mph",
-        "16_20_mph",
-        "21_25_mph",
-        "26_30_mph",
-        "31_35_mph",
-        "36_40_mph",
-        "41_45_mph",
-        "46_50_mph",
-        "51_55_mph",
-        "56_60_mph",
-        "61_70_mph",
-        "71_80_mph",
-        "80_plus_mph",
-        "avg_mph",
-        "total_volume",
-        "direction",
+        "time_period_end",
+        "interval",
+        "len_0_520_cm",
+        "len_521_660_cm",
+        "len_661_1160_cm",
+        "len_1160_plus_cm",
+        "speed_0_10_mph",
+        "speed_11_15_mph",
+        "speed_16_20_mph",
+        "speed_21_25_mph",
+        "speed_26_30_mph",
+        "speed_31_35_mph",
+        "speed_36_40_mph",
+        "speed_41_45_mph",
+        "speed_46_50_mph",
+        "speed_51_55_mph",
+        "speed_56_60_mph",
+        "speed_61_70_mph",
+        "speed_71_80_mph",
+        "speed_80_plus_mph",
+        "speed_avg_mph",
+        "total_vol",
         "longitude",
         "latitude",
         "status",
+        "type",
+        "direction",
         "easting",
         "northing",
     ]
@@ -158,7 +166,17 @@ def download(
         writer = csv.DictWriter(csvfile, fieldnames=headers)
         writer.writeheader()
 
-    url, direction, longitude, latitude, status, easting, northing = zip(*metadata)
+    (
+        url,
+        site_id,
+        site_type,
+        direction,
+        longitude,
+        latitude,
+        status,
+        easting,
+        northing,
+    ) = zip(*metadata)
 
     with ThreadPoolExecutor(max_workers=THREAD_POOL) as executor:
         executor.map(
@@ -169,6 +187,8 @@ def download(
             repeat(test_run),
             repeat(full_csv_name),
             url,
+            site_id,
+            site_type,
             direction,
             longitude,
             latitude,
