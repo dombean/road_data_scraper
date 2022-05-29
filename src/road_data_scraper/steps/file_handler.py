@@ -7,6 +7,8 @@ from pathlib import Path
 
 from google.cloud import storage
 
+LOGGER = logging.getLogger(__name__)
+
 
 def file_handler(config: dict, api_run: bool, start_date: str, end_date: str):
     """
@@ -52,13 +54,13 @@ def file_handler(config: dict, api_run: bool, start_date: str, end_date: str):
     run_id_path_metadata = Path(f"{run_id_path}metadata/")
     run_id_path_report = Path(f"{run_id_path}report/")
 
-    logging.info(f"Making Data Directory at: {run_id_path_data}")
+    LOGGER.info(f"Making Data Directory at: {run_id_path_data}")
     run_id_path_data.mkdir(parents=True, exist_ok=True)
 
-    logging.info(f"Making Metadata Directory at: {run_id_path_metadata}")
+    LOGGER.info(f"Making Metadata Directory at: {run_id_path_metadata}")
     run_id_path_metadata.mkdir(parents=True, exist_ok=True)
 
-    logging.info(f"Making Report Directory at: {run_id_path_report}")
+    LOGGER.info(f"Making Report Directory at: {run_id_path_report}")
     run_id_path_report.mkdir(parents=True, exist_ok=True)
 
     return run_id_path_data, run_id_path_metadata, run_id_path_report, run_id_path
@@ -74,7 +76,7 @@ def dump_config(config: dict, metadata_path: Path, api_run: bool):
         api_run (bool): True if using FastAPI for this run.
     """
 
-    logging.info(f"Dumping config.ini for Run at {metadata_path}")
+    LOGGER.info(f"Dumping config.ini for Run at {metadata_path}")
 
     if api_run:
         config_dict = config
@@ -117,7 +119,7 @@ def gcp_upload_from_directory(
         if local_file.is_file():
             blob = bucket.blob(remote_path)
             blob.upload_from_filename(local_file)
-            logging.info(
+            LOGGER.info(
                 f"Uploading {local_file} to Google Cloud Bucket: {destination_bucket_name} \n"
                 f"Subfolder {destination_blob_name}"
             )

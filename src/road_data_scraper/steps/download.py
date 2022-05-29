@@ -19,6 +19,8 @@ session.mount(
     ),
 )
 
+LOGGER = logging.getLogger(__name__)
+
 
 def get(
     site_name: str,
@@ -64,7 +66,7 @@ def get(
 
     response = session.get(url, headers=headers)
 
-    logging.info(
+    LOGGER.info(
         f"Request was completed in {response.elapsed.total_seconds()} seconds [{site_name}] [{response.url}]"
     )
 

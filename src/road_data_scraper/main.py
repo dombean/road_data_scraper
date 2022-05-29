@@ -10,6 +10,7 @@ from pathlib import Path
 
 from dateutil.relativedelta import relativedelta
 
+from road_data_scraper import TMP_LOG_PATH
 from road_data_scraper.report.report import run_reports
 from road_data_scraper.steps.download import THREAD_POOL, download
 from road_data_scraper.steps.file_handler import (
@@ -19,12 +20,7 @@ from road_data_scraper.steps.file_handler import (
 )
 from road_data_scraper.steps.metadata import get_sensor_urls, get_sites_by_sensor
 
-logging.basicConfig(
-    format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
-    level=logging.INFO,
-    datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[logging.StreamHandler()],
-)
+LOGGER = logging.getLogger(__name__)
 
 
 def run(config: dict, api_run: bool):
@@ -36,7 +32,6 @@ def run(config: dict, api_run: bool):
         config (dict): Configuration file for this run.
         api_run (bool): True if using FastAPI for this run.
     """
-
     start_time = time.time()
 
     if api_run:
@@ -68,16 +63,12 @@ def run(config: dict, api_run: bool):
         config, api_run, start_date, end_date
     )
 
-    logging.getLogger().addHandler(
-        logging.FileHandler(f"{metadata_path}/road_data_pipeline.log")
-    )
-
-    logging.info(f"Using {THREAD_POOL} threads")
+    LOGGER.info(f"Using {THREAD_POOL} threads")
 
     test_run = my_ast(config["user_settings"]["test_run"])
     generate_report = my_ast(config["user_settings"]["generate_report"])
 
-    logging.info("Getting Road Sensor Lookup Table")
+    LOGGER.info("Getting Road Sensor Lookup Table")
 
     sensor_tables, lookup_df = get_sites_by_sensor()
     lookup_df.to_csv(f"{str(metadata_path)}/road_data_sensor_lookup.csv", index=False)
@@ -86,10 +77,10 @@ def run(config: dict, api_run: bool):
         sensor_tables, start_date, end_date
     )
 
-    logging.info("Processed Road Sensor Lookup Table")
+    LOGGER.info("Processed Road Sensor Lookup Table")
 
     if test_run:
-        logging.info("Test Run")
+        LOGGER.info("Test Run")
         midas_metadata = midas_metadata[1:2]
         tmu_metadata = tmu_metadata[1:2]
         tame_metadata = tame_metadata[1:2]
@@ -114,10 +105,12 @@ def run(config: dict, api_run: bool):
     else:
         dump_config(config, metadata_path, api_run=False)
 
-    logging.info(f"Script Run Time: {round((time.time() - start_time)/60, 2)} minutes")
+    LOGGER.info(f"Script Run Time: {round((time.time() - start_time)/60, 2)} minutes")
+
+    log_file_path = f"{metadata_path}/road_data_pipeline.log"
+    shutil.copyfile(TMP_LOG_PATH, log_file_path)
 
     gcp_storage = my_ast(config["user_settings"]["gcp_storage"])
-
     if gcp_storage:
         gcp_upload_from_directory(
             run_id_path,
@@ -127,9 +120,8 @@ def run(config: dict, api_run: bool):
         )
 
     rm_dir = my_ast(config["user_settings"]["rm_dir"])
-
     if rm_dir:
-        logging.info(
+        LOGGER.info(
             f"Removing {run_id_path[run_id_path.find('output_data/'):].split('/')[1]} folder"
         )
         shutil.rmtree(Path(run_id_path))
