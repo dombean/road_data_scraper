@@ -114,8 +114,8 @@ def run(config: dict, api_run: bool):
     if gcp_storage:
         gcp_upload_from_directory(
             run_id_path,
-            gcp_bucket_name=my_ast(config["user_settings"]["gcp_bucket_name"]),
-            gcp_folder_name=my_ast(config["user_settings"]["gcp_blob_name"]),
+            destination_bucket_name=my_ast(config["user_settings"]["gcp_bucket_name"]),
+            destination_blob_name=my_ast(config["user_settings"]["gcp_blob_name"]),
             gcp_credentials=my_ast(config["user_settings"]["gcp_credentials"]),
         )
 
