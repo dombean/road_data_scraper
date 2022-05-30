@@ -124,7 +124,7 @@ class TestDownload(unittest.TestCase):
             expected_df.reset_index(drop=True),
         )
 
-    @patch("builtins.open")
+    @patch("road_data_scraper.steps.download.open")
     @patch(
         "concurrent.futures.ThreadPoolExecutor",
     )
@@ -200,16 +200,9 @@ class TestDownload(unittest.TestCase):
         # Assert CSV DictWriter uses expected_headers in fieldnames argument
         assert mock_csv_dictwriter.call_args_list[0][1] == expected_headers
 
-        # Assert open is called with correct CSV File Path and Mode
+        # # Assert open is called with correct CSV File Path and Mode
         assert mock_csv_open.call_args_list[0] == mock.call(
             "/home/user/downloads/midas_2021-01-01-2021-01-31_TEST_RUN.csv", "w"
-        )
-        assert mock_csv_open.call_args_list[1] == mock.call(
-            "/home/user/downloads/midas_2021-01-01-2021-01-31_TEST_RUN.csv",
-            "a",
-            encoding="utf-8",
-            errors="strict",
-            newline="",
         )
 
 
