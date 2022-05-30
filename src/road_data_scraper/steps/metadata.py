@@ -145,7 +145,6 @@ def get_sites_by_sensor():
         sensor_tables (Dict[pd.DataFrame]): Keyed by the name of the Road Traffic Sensor,
         values are Pandas DataFrames containing Metadata regarding each Traffic Sensor.
         lookup_df (pd.DataFrame): Pandas DataFrame containing all Road Traffic Sensors.
-
     """
 
     response = requests.get(f"{BASE_URL}sites")

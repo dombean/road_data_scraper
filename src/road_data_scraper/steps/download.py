@@ -22,7 +22,61 @@ session.mount(
 LOGGER = logging.getLogger(__name__)
 
 
-def get(
+def _response_to_df(
+    response,
+    site_id,
+    longitude,
+    latitude,
+    status,
+    site_type,
+    direction,
+    easting,
+    northing,
+):
+    """
+    Converts JSON stored `requests` response object to a Pandas DataFrame.
+    Then adds additional metadata/columns to the DataFrame:
+        - site_id
+        - longitude
+        - latitude
+        - site_type
+        - direction
+        - easting
+        - northing
+
+    Args:
+        response (_type_): `requests` response object.
+        site_id (str): Unique ID of Road Traffic Sensor.
+        longitude (str): Longitude of Road Traffic Sensor for a given Site ID.
+        latitude (str): Latitude of Road Traffic Sensor for a given Site ID.
+        status (str): Status of Road Traffic Sensor for a given Site ID.
+        site_type (str): Road Traffic Sensor Type: midas, tmu, tame.
+        direction (str): Direction of Road Traffic Sensor for a given Site ID.
+        easting (str): Easting of Road Traffic Sensor for a given Site ID.
+        northing (str): Northing of Road Traffic Sensor for a given Site ID.
+
+    Returns:
+        df (pd.DataFrame): Pandas DataFrame.
+    """
+
+    df = pd.DataFrame.from_dict(response.json()["Rows"])
+
+    df.insert(0, "site_id", site_id)
+
+    df = df.assign(
+        longitude=longitude,
+        latitude=latitude,
+        status=status,
+        type=site_type,
+        direction=direction,
+        easting=easting,
+        northing=northing,
+    )
+
+    return df
+
+
+def get_url(
     site_name: str,
     start_date: str,
     end_date: str,
@@ -39,7 +93,8 @@ def get(
     northing: str,
 ):
     """
-    Downloads a URL from WebTRIS Highways /reports/daily/ endpoint.
+    Scrapes a URL from WebTRIS Highways /reports/daily/ endpoint as a Pandas DataFrame,
+    and appends the DataFrame to a CSV.
 
     Args:
         site_name (str): Road Traffic Sensor Name.
@@ -47,7 +102,7 @@ def get(
         end_date (str): End Date; format: %Y-%m-%d.
         test_run (bool): If True, will only download a small subset data from WebTRIS Highways England API.
         full_csv_name (str): Output CSV File Path.
-        url (str): URL of Road Traffic Sensor for a given Site ID.
+        url (str): URL to Scrape -- Road Traffic Sensor for a given Site ID.
         site_id (str): Unique ID of Road Traffic Sensor.
         site_type (str): Road Traffic Sensor Type: midas, tmu, tame.
         direction (str): Direction of Road Traffic Sensor for a given Site ID.
@@ -56,9 +111,6 @@ def get(
         status (str): Status of Road Traffic Sensor for a given Site ID.
         easting (str): Easting of Road Traffic Sensor for a given Site ID.
         northing (str): Northing of Road Traffic Sensor for a given Site ID.
-
-    Returns:
-        _type_: _description_
     """
 
     message = "Parallel request of data for use in ONS. Emerging Platforms Team. @GitHub: dombean/road_data_scraper"
@@ -70,20 +122,18 @@ def get(
         f"Request was completed in {response.elapsed.total_seconds()} seconds [{site_name}] [{response.url}]"
     )
 
-    dataframe = pd.DataFrame.from_dict(response.json()["Rows"])
-    dataframe.insert(0, "site_id", site_id)
-
-    dataframe = dataframe.assign(
+    df = _response_to_df(
+        response=response,
+        site_id=site_id,
         longitude=longitude,
         latitude=latitude,
         status=status,
-        type=site_type,
+        site_type=site_type,
         direction=direction,
         easting=easting,
         northing=northing,
     )
-
-    dataframe.to_csv(f"{full_csv_name}", mode="a", header=False, index=False)
+    df.to_csv(f"{full_csv_name}", mode="a", header=False, index=False)
 
     if response.status_code != 200:
         logging.error(
@@ -113,8 +163,8 @@ def download(
         site_name (str): Name of Road Traffic Sensor.
         start_date (str): Start Date; format: %Y-%m-%d.
         end_date (str): End Date; format: %Y-%m-%d.
-        metadata (pd.DataFrame): Pandas DataFrame containing Metadata regarding a Road
-        Traiff Sensor.
+        metadata (List[tup]): List of Tuples. Each Tuple contains a URL and associated
+                              Metadata for a Road Traffic Sensor.
         test_run (bool): If True, will only download a small subset data from WebTRIS Highways England API.
         run_id_path (Path): Path object to run_id directory.
     """
@@ -182,7 +232,7 @@ def download(
 
     with ThreadPoolExecutor(max_workers=THREAD_POOL) as executor:
         executor.map(
-            get,
+            get_url,
             repeat(site_name),
             repeat(start_date),
             repeat(end_date),
