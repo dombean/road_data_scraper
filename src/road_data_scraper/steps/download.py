@@ -66,7 +66,7 @@ def _response_to_df(
     df = df.assign(
         longitude=longitude,
         latitude=latitude,
-        status=status,
+        sites_status=status,
         type=site_type,
         direction=direction,
         easting=easting,
@@ -200,7 +200,7 @@ def download(
         "total_vol",
         "longitude",
         "latitude",
-        "status",
+        "sites_status",
         "type",
         "direction",
         "easting",
