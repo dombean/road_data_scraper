@@ -2,7 +2,9 @@
 Reports Module
 --------------
 
-This module provides functionalities for generating HTML reports based on a template Jupyter notebook. It uses the Papermill and nbconvert libraries to execute the notebook and convert it to HTML format.
+This module provides functionalities for generating HTML reports based on a template Jupyter notebook. 
+
+It uses the Papermill and nbconvert libraries to execute the notebook and convert it to HTML format.
 
 Imported Libraries:
 -------------------
