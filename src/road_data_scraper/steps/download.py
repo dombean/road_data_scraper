@@ -4,8 +4,9 @@ Download Module
 This module is designed for scraping data from the WebTRIS Highways England API. It includes functionalities for data downloading in parallel,
 handling HTTP responses, converting the JSON response to a Pandas DataFrame, and appending the data to a CSV file.
 
-The module employs several concurrent programming concepts like threading, multiprocessing, and concurrent futures. The main function `download` uses ThreadPoolExecutor
-for parallel requests to increase the efficiency of the scraping process.
+The module employs several concurrent programming concepts like threading and concurrent futures. The main function `download` uses ThreadPoolExecutor
+for parallel requests to increase the efficiency of the scraping process. A unique feature of this module is the implementation of the `make_get_url` function,
+a closure that encloses a thread-safe counter and counter lock to keep track of progress in a thread-safe manner.
 
 List of classes, dataclasses, and functions:
 ---------------------------------------------
@@ -19,8 +20,9 @@ List of classes, dataclasses, and functions:
 3. Function: _response_to_df(response, metadata: UrlMetadata):
     Converts the response JSON object into a pandas DataFrame and adds additional metadata/columns to it.
 
-4. Function: get_url(site_name: str, start_date: str, end_date: str, test_run: bool, full_csv_name: str, metadata: UrlMetadata, total_urls: int):
-    Responsible for scraping a URL from the WebTRIS Highways endpoint and logging the progress. It also handles request failures and server overloads.
+4. Function: make_get_url(total_urls: int):
+    Returns a thread-safe version of the get_url function that encloses its own counter and counter lock for keeping track of progress.
+    The get_url function is responsible for scraping a URL from the WebTRIS Highways endpoint and logging the progress. It also handles request failures and server overloads.
 
 5. Function: download(site_name: str, start_date: str, end_date: str, metadata: list[tuple], test_run: bool, run_id_path: Path):
     Main function responsible for initiating the scraping process. It takes in details about the site name, date range, metadata, etc., and executes the process in parallel.
@@ -44,10 +46,7 @@ Global Variables:
 - THREAD_POOL: Number of threads for ThreadPoolExecutor, equals the number of CPUs on the current machine.
 - session: A session of HTTP requests.
 - LOGGER: Logging object for logging progress and errors.
-- COUNTER_LOCK: A lock to handle the COUNTER variable in concurrent programming.
-- COUNTER: A counter to keep track of processed URLs.
 """
-
 import csv
 import logging
 import multiprocessing
@@ -57,6 +56,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from itertools import repeat
 from pathlib import Path
+from typing import Callable
 
 import pandas as pd
 import requests
@@ -72,9 +72,6 @@ session.mount(
 )
 
 LOGGER = logging.getLogger(__name__)
-
-COUNTER_LOCK = threading.Lock()
-COUNTER = 0
 
 
 @dataclass(frozen=True)
@@ -194,64 +191,84 @@ def _response_to_df(response, metadata: UrlMetadata):
     return df
 
 
-def get_url(
-    site_name: str,
-    start_date: str,
-    end_date: str,
-    test_run: bool,
-    full_csv_name: str,
-    metadata: UrlMetadata,
-    total_urls: int,
-):
+def make_get_url() -> Callable:
     """
-    Scrapes a URL from WebTRIS Highways /reports/daily/ endpoint as a Pandas DataFrame,
-    appends the DataFrame to a CSV, and logs progress.
+    Constructs a new instance of the `get_url` function with its own counter and counter lock.
 
-    Args:
-        site_name (str): The name of the road traffic sensor.
-        start_date (str): The start date in the format %Y-%m-%d.
-        end_date (str): The end date in the format %Y-%m-%d.
-        test_run (bool): If True, will only download a small subset data from WebTRIS Highways England API.
-        full_csv_name (str): The output CSV file path.
-        metadata (UrlMetadata): An instance of UrlMetadata containing the metadata for a URL.
-        total_urls (int): The total number of URLs to be processed.
+    This function leverages the concept of closures in Python. A closure in Python is a tuple of
+    variables that are created by the function's environment when it is defined. Thus, the `get_url` function
+    created by this function encloses its own counter and counter lock, making it thread-safe.
+
+    The `get_url` function is used in multi-threading environments where each thread processes a URL.
+    It increments the enclosed counter in a thread-safe manner after processing a URL and prints a log
+    message every time a certain number of URLs (defined by LOG_INTERVAL) have been processed.
 
     Returns:
-        response: The HTTP response received when accessing the URL.
+        Callable: The `get_url` function enclosed with its own counter and counter lock. It takes parameters
+        `site_name`, `start_date`, `end_date`, `test_run`, `full_csv_name`, and `metadata` of type UrlMetadata
+        and returns a requests.Response object.
     """
-    global COUNTER
+    counter = [0]
+    counter_lock = threading.Lock()
 
-    message = "Parallel request of data for use in ONS. Emerging Platforms Team. @GitHub: dombean/road_data_scraper"
-    headers = {"Message": f"{message}"}
+    def get_url(
+        site_name: str,
+        start_date: str,
+        end_date: str,
+        test_run: bool,
+        full_csv_name: str,
+        metadata: UrlMetadata,
+        total_urls: int,
+    ):
+        """
+        Scrapes a URL from WebTRIS Highways /reports/daily/ endpoint as a Pandas DataFrame,
+        appends the DataFrame to a CSV, and logs progress.
 
-    response = session.get(metadata.url, headers=headers)
+        Args:
+            site_name (str): The name of the road traffic sensor.
+            start_date (str): The start date in the format %Y-%m-%d.
+            end_date (str): The end date in the format %Y-%m-%d.
+            test_run (bool): If True, will only download a small subset data from WebTRIS Highways England API.
+            full_csv_name (str): The output CSV file path.
+            metadata (UrlMetadata): An instance of UrlMetadata containing the metadata for a URL.
+            total_urls (int): The total number of URLs to be processed.
 
-    with COUNTER_LOCK:
-        COUNTER += 1
-        remaining = total_urls - COUNTER
-        log_interval = max(
-            1, total_urls // 10
-        )  # log after processing about 10% of the URLs, but at least once
+        Returns:
+            response: The HTTP response received when accessing the URL.
+        """
+        message = "Parallel request of data for use in ONS. Emerging Platforms Team. @GitHub: dombean/road_data_scraper"
+        headers = {"Message": f"{message}"}
 
-        if COUNTER % log_interval == 0 or COUNTER == total_urls:
-            LOGGER.info(
-                f"Processed {COUNTER} URLs. Remaining: {remaining}. Last request was completed in {response.elapsed.total_seconds()} seconds. [{response.url}]"
+        response = session.get(metadata.url, headers=headers)
+
+        with counter_lock:
+            counter[0] += 1
+            remaining = total_urls - counter[0]
+            log_interval = max(
+                1, total_urls // 10
+            )  # log after processing about 10% of the URLs, but at least once
+
+            if counter[0] % log_interval == 0 or counter[0] == total_urls:
+                LOGGER.info(
+                    f"Processed {counter[0]} URLs. Remaining: {remaining}. Last request was completed in {response.elapsed.total_seconds()} seconds. [{response.url}]"
+                )
+
+        df = _response_to_df(response=response, metadata=metadata)
+
+        df.to_csv(f"{full_csv_name}", mode="a", header=False, index=False)
+
+        if response.status_code != 200:
+            logging.error(
+                "request failed, error code %s [%s]", response.status_code, response.url
             )
 
-    df = _response_to_df(response=response, metadata=metadata)
+        if 500 <= response.status_code < 600:
+            # server is overloaded? give it a break
+            time.sleep(5)
 
-    df.to_csv(f"{full_csv_name}", mode="a", header=False, index=False)
+        return response
 
-    if response.status_code != 200:
-        logging.error(
-            "request failed, error code %s [%s]", response.status_code, response.url
-        )
-
-    if 500 <= response.status_code < 600:
-        # server is overloaded? give it a break
-        time.sleep(5)
-
-    return response
+    return get_url
 
 
 def download(
@@ -293,6 +310,7 @@ def download(
 
     total_urls = len(metadata)
     url_metadata_list = [UrlMetadata(*item) for item in metadata]
+    get_url = make_get_url()
 
     with ThreadPoolExecutor(max_workers=THREAD_POOL) as executor:
         executor.map(
