@@ -1,3 +1,10 @@
+"""
+Main Module
+-----------
+This module contains the main driver function for the road traffic data scraping pipeline. 
+
+It interfaces with the necessary sub-modules and coordinates the pipeline's stages.
+"""
 import ast
 import calendar
 import configparser
