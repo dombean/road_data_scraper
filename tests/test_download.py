@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-from road_data_scraper.steps.download import _response_to_df, download
+from road_data_scraper.steps.download import UrlMetadata, _response_to_df, download
 
 
 class TestDownload(unittest.TestCase):
@@ -53,25 +53,20 @@ class TestDownload(unittest.TestCase):
 
         mock_response.return_value = pd.DataFrame(data, columns=headers)
 
-        site_id = "2"
-        longitude = "-0.320275"
-        latitude = "52.535158"
-        status = "Active"
-        site_type = "midas"
-        direction = "southbound"
-        easting = "514029"
-        northing = "294356"
+        test_url_metadata_instance = UrlMetadata(
+            url="test_url.com",
+            site_id="2",
+            longitude="-0.320275",
+            latitude="52.535158",
+            status="Active",
+            site_type="midas",
+            direction="southbound",
+            easting="514029",
+            northing="294356",
+        )
 
         actual_result_df = _response_to_df(
-            response=mock_response,
-            site_id=site_id,
-            longitude=longitude,
-            latitude=latitude,
-            status=status,
-            site_type=site_type,
-            direction=direction,
-            easting=easting,
-            northing=northing,
+            response=mock_response, metadata=test_url_metadata_instance
         )
 
         headers = [
