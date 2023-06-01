@@ -1,7 +1,7 @@
 """
 Main Module
 -----------
-This module contains the main driver function for the road traffic data scraping pipeline. 
+This module contains the main driver function for the road traffic data scraping pipeline.
 
 It interfaces with the necessary sub-modules and coordinates the pipeline's stages.
 """
@@ -84,7 +84,6 @@ def run(config: dict, api_run: bool) -> None:
     end_date = my_ast(config["user_settings"]["end_date"])
 
     if not start_date and not end_date:
-
         # 2-month API data lag (date today minus two months)
         date_object_today = datetime.strptime(time.strftime("%Y-%m"), "%Y-%m")
         minus_two_months = date_object_today - relativedelta(months=2)
@@ -164,7 +163,6 @@ def run(config: dict, api_run: bool) -> None:
 
 
 if __name__ == "__main__":
-
     config = configparser.ConfigParser()
     config.read("./config.ini")
 

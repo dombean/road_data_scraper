@@ -36,7 +36,6 @@ class TestFileHandler(unittest.TestCase):
         expected_datetime = datetime.datetime(2022, 1, 31)
 
         with patch("datetime.datetime", wraps=datetime.datetime) as patched_datetime:
-
             patched_datetime.now.return_value = expected_datetime
 
             (
@@ -82,7 +81,6 @@ class TestFileHandler(unittest.TestCase):
 
         expected_datetime = datetime.datetime(2022, 1, 31)
         with patch("datetime.datetime", wraps=datetime.datetime) as patched_datetime:
-
             patched_datetime.now.return_value = expected_datetime
 
             (

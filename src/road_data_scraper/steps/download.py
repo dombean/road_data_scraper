@@ -1,22 +1,22 @@
 """
 Download Module
 ---------------
-This module is designed for scraping data from the WebTRIS Highways England API. It includes functionalities for data downloading in parallel, 
-handling HTTP responses, converting the JSON response to a Pandas DataFrame, and appending the data to a CSV file. 
+This module is designed for scraping data from the WebTRIS Highways England API. It includes functionalities for data downloading in parallel,
+handling HTTP responses, converting the JSON response to a Pandas DataFrame, and appending the data to a CSV file.
 
-The module employs several concurrent programming concepts like threading, multiprocessing, and concurrent futures. The main function `download` uses ThreadPoolExecutor 
+The module employs several concurrent programming concepts like threading, multiprocessing, and concurrent futures. The main function `download` uses ThreadPoolExecutor
 for parallel requests to increase the efficiency of the scraping process.
 
 List of classes, dataclasses, and functions:
 ---------------------------------------------
 
-1. DataClass: UrlMetadata: 
+1. DataClass: UrlMetadata:
     Represents the metadata of a URL that includes details like site_id, site_type, geographical coordinates, etc.
 
-2. Function: _get_headers(): 
+2. Function: _get_headers():
     Returns the list of headers used for creating the CSV file.
 
-3. Function: _response_to_df(response, metadata: UrlMetadata): 
+3. Function: _response_to_df(response, metadata: UrlMetadata):
     Converts the response JSON object into a pandas DataFrame and adds additional metadata/columns to it.
 
 4. Function: get_url(site_name: str, start_date: str, end_date: str, test_run: bool, full_csv_name: str, metadata: UrlMetadata, total_urls: int):

@@ -16,7 +16,6 @@ from road_data_scraper.steps.metadata import (
 
 class TestMetadata(unittest.TestCase):
     def setUp(self):
-
         headers = [
             "id",
             "name",
@@ -63,7 +62,6 @@ class TestMetadata(unittest.TestCase):
         }
 
     def test_create_sensor_metadata_tuples(self):
-
         start_date = "01012020"
         end_date = "31012020"
 
@@ -269,13 +267,11 @@ class TestMetadata(unittest.TestCase):
         with patch(
             "road_data_scraper.steps.metadata.create_sensor_metadata_tuples"
         ) as patched_create_sensor_metadata_tuples:
-
             get_sensor_urls(self.sensor_tables, start_date, end_date)
 
             assert len(patched_create_sensor_metadata_tuples.call_args_list) == 3
 
     def test_get_sensor_urls_DATA(self):
-
         start_date = "2020-01-01"
         end_date = "2020-01-31"
 
@@ -505,7 +501,6 @@ class TestMetadata(unittest.TestCase):
         assert_frame_equal(actual_df, expected_df)
 
     def test_status_string_cleaner(self):
-
         test_df = pd.DataFrame(
             [
                 "eastbound",
@@ -615,7 +610,6 @@ class TestMetadata(unittest.TestCase):
         with patch(
             "road_data_scraper.steps.metadata.pd.DataFrame.from_dict",
         ) as patched_dataframe_from_dict:
-
             patched_dataframe_from_dict.return_value = test_df
 
             actual_sensor_tables_dict, actual_lookup_df = get_sites_by_sensor()

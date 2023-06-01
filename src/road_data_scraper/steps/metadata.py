@@ -1,7 +1,7 @@
 """
 Metadata Module
 ---------------
-This module is primarily used to generate metadata for the road traffic sensor data scraping pipeline. It interacts 
+This module is primarily used to generate metadata for the road traffic sensor data scraping pipeline. It interacts
 with the Highways England WebTRIS API to fetch sensor data and create relevant metadata including sensor URLs.
 
 The module provides several functions:

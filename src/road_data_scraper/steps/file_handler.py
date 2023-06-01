@@ -1,18 +1,18 @@
 """
 File Handler Module
 -------------------
-This module provides functionalities related to handling files and directories for a data scraping application. It includes utilities 
+This module provides functionalities related to handling files and directories for a data scraping application. It includes utilities
 for creating directories to store scraped data, saving configuration files, and uploading files to Google Cloud Storage (GCP) Buckets.
 
-The `file_handler` function is used to create directories to store the scraped data, metadata, and reports. It takes in the configuration 
-file, a boolean flag indicating whether the run is made through FastAPI, start date, and end date as input. The function then creates 
+The `file_handler` function is used to create directories to store the scraped data, metadata, and reports. It takes in the configuration
+file, a boolean flag indicating whether the run is made through FastAPI, start date, and end date as input. The function then creates
 unique directories based on the current date and time and returns these directories as Path objects.
 
-The `dump_config` function dumps the configuration file that was used for a particular run into the metadata directory. This is useful for 
+The `dump_config` function dumps the configuration file that was used for a particular run into the metadata directory. This is useful for
 keeping track of what settings were used for a particular run and can be helpful for debugging and reproducibility.
 
-The `gcp_upload_from_directory` function uploads the entire output directory for a Pipeline Run to a Google Cloud Platform (GCP) Bucket. It 
-uses the Google Cloud storage client to handle the uploading process. The user has to provide the directory that needs to be uploaded, 
+The `gcp_upload_from_directory` function uploads the entire output directory for a Pipeline Run to a Google Cloud Platform (GCP) Bucket. It
+uses the Google Cloud storage client to handle the uploading process. The user has to provide the directory that needs to be uploaded,
 the name of the GCP bucket, the name of the blob in the GCP bucket, and the path to the JSON file containing GCP credentials.
 
 Imported Libraries:
@@ -151,7 +151,6 @@ def gcp_upload_from_directory(
     local_paths = glob.glob(directory_path + "/**", recursive=True)
 
     for local_file in local_paths:
-
         local_file = Path(local_file)
         remote_path = f"{destination_blob_name}/{str(local_file)[str(local_file).find('output_data/'):]}"
 

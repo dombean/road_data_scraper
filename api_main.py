@@ -32,7 +32,6 @@ def scrape_webtris_api(
     gcp_bucket_name: Optional[str] = None,
     gcp_blob_name: Optional[str] = "landing_zone",
 ):
-
     config = {
         "user_settings": {
             "start_date": str(start_date),
