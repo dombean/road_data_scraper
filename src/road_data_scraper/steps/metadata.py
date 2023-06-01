@@ -1,3 +1,22 @@
+"""
+Metadata Module
+---------------
+This module is primarily used to generate metadata for the road traffic sensor data scraping pipeline. It interacts 
+with the Highways England WebTRIS API to fetch sensor data and create relevant metadata including sensor URLs.
+
+The module provides several functions:
+
+    - create_sensor_metadata_tuples: Creates tuples of sensor metadata including sensor URL and other sensor details.
+    - get_sensor_urls: Generates URLs for the road sensors (MIDAS, TAME, TMU) and packs each URL with other sensor
+        metadata into a tuple.
+    - direction_string_cleaner: Cleans the direction data string.
+    - name_string_cleaner: Cleans the sensor name string.
+    - get_sites_by_sensor: Fetches and processes sensor data from the API to generate metadata.
+
+Constants:
+----------
+    BASE_URL (str): Base URL for the Highways England WebTRIS API.
+"""
 import datetime
 from functools import partial
 
@@ -8,23 +27,32 @@ BASE_URL = "https://webtris.highwaysengland.co.uk/api/v1/"
 
 
 def create_sensor_metadata_tuples(
-    sensor_tables: dict, start_date: str, end_date: str, sensor_name: str = None
-):
+    sensor_tables: dict[str, pd.DataFrame],
+    start_date: str,
+    end_date: str,
+    sensor_name: str = None,
+) -> list[tuple[str, int, str, str, float, float, str, float, float]]:
     """
-    Helper Function that returns a list of tuples containing metadata
-    regarding a particular Road Traffic Sensor URL/Site ID.
+    Generates metadata tuples for specific road traffic sensor based on the given sensor name.
+
+    This function constructs the URL for accessing the sensor data and combines it with various
+    sensor metadata to form a tuple. The list of these tuples for all sensors of the specified
+    type is then returned.
 
     Args:
-        sensor_tables (Dict[pd.DataFrame]): Keyed by the name of the Road Traffic Sensor,
-        values are Pandas DataFrames containing Metadata regarding each Traffic Sensor.
-        start_date (str): Start Date; format: %Y-%m-%d.
-        end_date (str): End Date; format: %Y-%m-%d.
+        sensor_tables (dict): A dictionary mapping sensor names (midas, tame, tmu) to their corresponding
+            metadata stored in pandas DataFrame.
+        start_date (str): Start date in the format 'YYYY-MM-DD'.
+        end_date (str): End date in the format 'YYYY-MM-DD'.
+        sensor_name (str, optional): The name of the sensor for which metadata tuples are to be created.
+            Should be one of 'midas', 'tame', or 'tmu'. Defaults to None.
+
+    Raises:
+        ValueError: If sensor_name is not 'midas', 'tame' or 'tmu'.
 
     Returns:
-        sensor_metadata List(tuple): A list containing tuples which holds metadata
-        regarding each Road Traffic Sensor URL/Site ID.
+        sensor_metadata (list[tuple]): List of tuples, each containing metadata of a sensor.
     """
-
     if sensor_name not in ("midas", "tame", "tmu"):
         raise ValueError("Available Sensors are: midas, tame, tmu.")
 
@@ -50,25 +78,28 @@ def create_sensor_metadata_tuples(
     return sensor_metadata
 
 
-def get_sensor_urls(sensor_tables: dict, start_date: str, end_date: str):
+def get_sensor_urls(
+    sensor_tables: dict[str, pd.DataFrame], start_date: str, end_date: str
+) -> tuple[
+    list[tuple[str, int, str, str, float, float, str, float, float]],
+    list[tuple[str, int, str, str, float, float, str, float, float]],
+    list[tuple[str, int, str, str, float, float, str, float, float]],
+]:
     """
-    Generates URLs for each Road Sensor: MIDAS, TAME, TMU.
+    Generates URLs and associated metadata for all road sensors: MIDAS, TAME, TMU.
 
-    Stores each URL in a tuple alongside the sensor's direction, longitude, latitude,
-    status, easting, and northing.
+    This function uses the create_sensor_metadata_tuples function to create metadata tuples
+    for all types of sensors.
 
     Args:
-        sensor_tables (Dict[pd.DataFrame]): Keyed by the name of the Road Traffic Sensor,
-        values are Pandas DataFrames containing Metadata regarding each Traffic Sensor.
-        start_date (str): Start Date; format: %Y-%m-%d.
-        end_date (str): End Date; format: %Y-%m-%d.
+        sensor_tables (dict): A dictionary mapping sensor names (midas, tame, tmu) to their corresponding
+            metadata stored in pandas DataFrame.
+        start_date (str): Start date in the format 'YYYY-MM-DD'.
+        end_date (str): End date in the format 'YYYY-MM-DD'.
 
     Returns:
-        midas_metadata List(tuple): A list containing tuples which holds metadata for each MIDAS sensor URL.
-        tmu_metadata List(tuple): A list containing tuples which holds metadata for each TMU sensor URL.
-        tame_metadata List(tuple): A list containing tuples which holds metadata for each TAME sensor URL.
+        tuple[list]: Three lists containing metadata tuples for MIDAS, TMU, and TAME sensors respectively.
     """
-
     create_sensor_metadata_tuples_partial = partial(
         create_sensor_metadata_tuples,
         sensor_tables=sensor_tables,
@@ -85,9 +116,11 @@ def get_sensor_urls(sensor_tables: dict, start_date: str, end_date: str):
     return midas_metadata, tmu_metadata, tame_metadata
 
 
-def direction_string_cleaner(record):
+def direction_string_cleaner(record: str) -> str:
     """
-    Pandas Helper Function to clean a record in the "direction" column.
+    Cleans a string in the "direction" column of the sensor metadata.
+
+    Based on some predetermined rules, the function assigns a cleaned version of the direction string.
 
     Args:
         record (str): Strings in "direction" column.
@@ -115,9 +148,12 @@ def direction_string_cleaner(record):
         return record
 
 
-def name_string_cleaner(record):
+def name_string_cleaner(record: str) -> str:
     """
-    Pandas Helper function to clean "name" column.
+    Cleans a string in the "name" column of the sensor metadata.
+
+    The function checks if certain substrings are in the original string and replaces the original
+    string with a cleaned version based on that.
 
     Args:
         record (str): Strings in "name" column.
@@ -137,16 +173,17 @@ def name_string_cleaner(record):
         return record
 
 
-def get_sites_by_sensor():
+def get_sites_by_sensor() -> tuple[dict[str, pd.DataFrame], pd.DataFrame]:
     """
-    Queries WebTRIS Highways England /sites/ endpoint.
+    Retrieves site metadata from the Highways England WebTRIS API.
+
+    This function sends a GET request to the API and processes the response into a Pandas DataFrame.
+    The function also performs data cleaning operations on the "name" and "direction" columns.
 
     Returns:
-        sensor_tables (Dict[pd.DataFrame]): Keyed by the name of the Road Traffic Sensor,
-        values are Pandas DataFrames containing Metadata regarding each Traffic Sensor.
-        lookup_df (pd.DataFrame): Pandas DataFrame containing all Road Traffic Sensors.
+        sensor_tables (dict[pd.DataFrame]): A dictionary mapping sensor names to their respective metadata DataFrames.
+        lookup_df (pd.DataFrame): A DataFrame containing metadata for all road traffic sensors.
     """
-
     response = requests.get(f"{BASE_URL}sites")
 
     lookup_df = pd.DataFrame.from_dict(response.json()["sites"])
