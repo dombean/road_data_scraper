@@ -23,14 +23,43 @@ from road_data_scraper.steps.metadata import get_sensor_urls, get_sites_by_senso
 LOGGER = logging.getLogger(__name__)
 
 
-def run(config: dict, api_run: bool):
+def run(config: dict, api_run: bool) -> None:
     """
-    Runs the Pipeline to Scrape Road Traffic Sensor Data
-    from Highways England WebTRIS API.
+    Orchestrates the execution of a web scraping pipeline that extracts Road Traffic Sensor Data
+    from the Highways England WebTRIS API. It handles various stages including configuration setup,
+    data fetching, report generation, and optional actions such as data upload to a Google Cloud
+    Platform bucket and directory removal.
 
     Args:
-        config (dict): Configuration file for this run.
-        api_run (bool): True if using FastAPI for this run.
+        config (dict): Configuration file containing various settings for the pipeline run.
+            Contains settings such as start and end dates, the number of threads to use,
+            test run flag, report generation flag, and details for Google Cloud Storage, etc.
+
+        api_run (bool): Flag indicating whether the pipeline is being run through the FastAPI
+            framework. Affects how certain configuration settings are processed.
+
+    The function also interacts with several other functions to accomplish its task:
+        1. It uses the `file_handler` function to create necessary directories.
+        2. It uses `get_sites_by_sensor` and `get_sensor_urls` to fetch sensor data.
+        3. It calls the `download` function to download sensor data.
+        4. If configured, it uses the `run_reports` function to generate reports.
+        5. It uses `dump_config` to save the configuration file to metadata.
+        6. If configured, it uses `gcp_upload_from_directory` to upload data to Google Cloud.
+        7. Finally, if configured, it removes the run directory.
+
+    Returns:
+        None. This function performs operations but does not return any value. It manages the
+        web scraping pipeline including data fetching, report generation, data uploading and
+        directory cleanup.
+
+    Raises:
+        ValueError: If the output directory in config is not valid, it's raised by `file_handler`.
+        Various exceptions can also be raised during downloading, report generation, and GCP upload stages.
+
+    Example usage:
+        >>> config = configparser.ConfigParser()
+        >>> config.read("./config.ini")
+        >>> run(config, api_run=False)
     """
     start_time = time.time()
 
