@@ -70,11 +70,26 @@ The configuration parameters include:
 - __gcp_bucket_name__: The name of your Google Cloud Bucket.
 - __gcp_blob_name__: The name of the blob in your Google Cloud Bucket where the data will be stored. The default value is "landing_zone".
 
-For example, a request might look like this:
+There are two ways to interact with the Road Data Scraper API - via a `curl` command in your terminal or directly through the FastAPI interface.
+
+### Curl Command
+
+To use a curl command, simply send a GET request to the `/scrape/` endpoint with the configuration parameters you want. For example:
 
 ```bash
 curl -X GET "http://localhost:8000/scrape/?test_run=True&generate_report=True&output_path=~/data/&rm_dir=False&gcp_storage=True&start_date=2022-01-01&end_date=2022-01-31&gcp_credentials=~/gcp_credentials.json&gcp_bucket_name=my_bucket&gcp_blob_name=landing_zone"
 ```
+
+### FastAPI Interface
+
+If you prefer a more interactive approach, you can use the built-in FastAPI interface. Here's how:
+
+1. Open the FastAPI documentation page by navigating to the `/docs` endpoint of your API, such as `http://localhost:8000/docs`.
+2. Locate the `/scrape/` endpoint in the list of available endpoints.
+3. Click on it to expand the endpoint's details. Here, you'll find information about the expected parameters and their types.
+4. Click the __"Try it out"__ button. This will make the parameter fields editable.
+5. Fill in the fields with the parameters you wish to use. Remember to stick to the expected format for each field.
+6. Once you've filled in all the parameters, click __"Execute"__ to run the request. The API will process the request and return a response in the same window.
 
 # API Response
 
