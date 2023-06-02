@@ -133,6 +133,28 @@ def scrape_webtris_api(
     gcp_bucket_name: Optional[str] = None,
     gcp_blob_name: Optional[str] = "landing_zone",
 ):
+    """
+    Executes the WebTRIS Scraping Pipeline based on user configurations.
+
+    This endpoint allows user to run a web scraping task with specified configurations.
+    The configurations include start and end dates, testing mode, report generation, output path,
+    removal of directories, Google Cloud Storage options, and credentials for Google Cloud Platform.
+
+    Args:
+        test_run (bool): Specifies whether to run the task in test mode.
+        generate_report (bool): Specifies whether to generate a report.
+        output_path (str): The path where the scraped data should be stored.
+        rm_dir (bool): Specifies whether to remove directories.
+        gcp_storage (bool): Specifies whether to use Google Cloud Storage.
+        start_date (Optional[date]): The start date for the scraping task.
+        end_date (Optional[date]): The end date for the scraping task.
+        gcp_credentials (Optional[str]): The credentials for Google Cloud Platform.
+        gcp_bucket_name (Optional[str]): The name of the bucket in Google Cloud Storage.
+        gcp_blob_name (Optional[str]): The name of the blob in Google Cloud Storage.
+
+    Returns:
+        A string indicating that the WebTRIS Scraping Pipeline has been successfully executed.
+    """
     config = {
         "user_settings": {
             "start_date": str(start_date),
