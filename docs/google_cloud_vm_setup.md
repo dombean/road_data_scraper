@@ -30,5 +30,5 @@ Follow the steps below to set up the Road Data Scraper on a Google Cloud VM inst
    python3 runner.py
    ```
 
-Please note that these instructions assume some prior knowledge of working with Google Cloud VM instances. 
+Please note that these instructions assume some prior knowledge of working with Google Cloud VM instances.
 Make sure to adapt the steps as necessary based on your specific environment and requirements.
