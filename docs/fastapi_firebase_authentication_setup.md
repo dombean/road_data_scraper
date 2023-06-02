@@ -39,7 +39,7 @@ GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/serviceAccountKey.json
 
 Replace `/path/to/your/serviceAccountKey.json` with the actual path to your JSON file.
 
-When you start the application locally, it will use the credentials specified in this file to authenticate with Firebase. 
+When you start the application locally, it will use the credentials specified in this file to authenticate with Firebase.
 
 To protect your sensitive data, ensure that the `.env` file is included in your `.gitignore` file to prevent it from being tracked by version control. In addition, add `.env` to your `.dockerignore` file to prevent it from being included in your Docker image, which could potentially expose your sensitive data.
 

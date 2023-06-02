@@ -4,7 +4,7 @@ This README is intended as a comprehensive guide to setting up your Google Cloud
 
 # Google Project Setup
 
-Setting up your Google Cloud Project (GCP) correctly is an essential first step in this process. This includes setting your active account, choosing your active project, and verifying the service name and service account permissions. An incorrectly set up GCP can lead to a range of issues, the most common being the __"PERMISSION_DENIED"__ error. 
+Setting up your Google Cloud Project (GCP) correctly is an essential first step in this process. This includes setting your active account, choosing your active project, and verifying the service name and service account permissions. An incorrectly set up GCP can lead to a range of issues, the most common being the __"PERMISSION_DENIED"__ error.
 
 If you're still encountering the __"PERMISSION_DENIED"__ error after ensuring that the appropriate roles have been granted to your account, there might be a couple of other factors at play. Here are a few troubleshooting steps you can try:
 
@@ -163,6 +163,6 @@ To set up this access, please follow these steps:
 
 8. Click on the "Save" button to apply the changes and grant the role.
 
-After the __"Secret Manager Secret Accessor"__ role is granted to the Cloud Run service account, it will have the necessary permissions to access secrets stored in Google Secret Manager. 
+After the __"Secret Manager Secret Accessor"__ role is granted to the Cloud Run service account, it will have the necessary permissions to access secrets stored in Google Secret Manager.
 
 Please note: It can take a few minutes for the permission changes to propagate. If you encounter an error after granting the permission, please wait a few minutes before trying again.
