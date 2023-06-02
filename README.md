@@ -40,6 +40,7 @@ The Road Data Scraper project has the following structure:
 ├── requirements.txt
 ├── requirements_dev.txt
 ├── tox.ini
+├── docs
 └── README.md
 ```
 
@@ -63,6 +64,7 @@ The project directory contains the following components:
 - `requirements_dev.txt`: File listing additional development-specific requirements for the project.
 - `tox.ini`: Configuration file for running tests using the Tox testing tool.
 - `tests`: Directory containing test files for the project.
+- `docs/`: Folder containing additional documentation files related to various aspects of the Road Data Scraper project, such as Docker build process, FastAPI with Firebase authentication, Google Cloud project setup, and more.
 - `README.md`: Documentation file providing an overview and instructions for using the Road Data Scraper.
 
 The main functionality of the Road Data Scraper resides in the `src/road_data_scraper/steps` directory, where the core modules for data scraping, file handling, metadata generation, and report generation are located. The `road_data_report_template.ipynb` file, which serves as the template for generating HTML reports, is placed inside the `src/road_data_scraper/report` directory.
@@ -120,20 +122,3 @@ Follow the below steps to set up the Road Data Scraper on a Google Cloud VM inst
 10) Update the path to the `config.ini` file in `runner.py`.
 11) Adjust the parameters in the `config.ini` file as per your requirements. Refer to the README section on __Adjusting the Config File__ for more information.
 12) Run the Road Data Scraper Pipeline: `python3 runner.py`
-
-# Google Cloud Run Setup
-
-Ensure Docker and Google Cloud SDK are installed locally. You will also need to authenticate Google Cloud and Docker.
-
-- Login to Google Cloud on the command line: ```gcloud auth login```
-- Configure Google Cloud Project on the command line: ```gcloud config set project <project-name>```
-- Configure Docker and Google Cloud Credentials: ```gcloud auth configure-docker```
-
-1) Clone the repository: `git clone https://github.com/dombean/road_data_scraper.git`
-2) Change directory into the cloned repository: `cd road_data_scraper/`
-3) Download your Google Cloud __JSON Credentials__ into the repository.
-4) Build the Docker Image: `docker build -t road-data-scraper -f Dockerfile .`
-5) Test the Docker Image: `docker run -it --env PORT=80 -p 80:80 road-data-scraper`
-6) Tag the Docker Image: `docker tag road-data-scraper eu.gcr.io/<project-name>/road-data-scraper`
-7) Push the Docker Image: `docker push eu.gcr.io/<project-name>/road-data-scraper`
-8) Deploy the Docker Image on Google Cloud Run: `gcloud run deploy road-data-scraper --image eu.gcr.io/<project-name>/road-data-scraper --platform managed --region europe-west2 --timeout "3600" --cpu "4" --memory "16Gi" --max-instances "3"`
