@@ -1,11 +1,11 @@
 """
 FastAPI Module
 --------------
-This module provides the FastAPI web service for the Road Data Scraper. The scraper extracts data 
+This module provides the FastAPI web service for the Road Data Scraper. The scraper extracts data
 from the Highways England WebTRIS Traffic Flow API, cleanses it, and stores it in a Google Cloud Bucket.
 
-The Road Data Scraper API allows users to specify configuration options such as the data's start and end 
-dates, whether to perform a test run, and whether to generate an HTML report. This report displays the active 
+The Road Data Scraper API allows users to specify configuration options such as the data's start and end
+dates, whether to perform a test run, and whether to generate an HTML report. This report displays the active
 and inactive IDs for each type of road sensor: MIDAS, TMU, and TAME.
 
 Modules:
@@ -19,7 +19,7 @@ Routes:
 Configuration Options:
     start_date (str): The start date for the data scraping, formatted as %Y-%m-%d. Optional.
     end_date (str): The end date for the data scraping, formatted as %Y-%m-%d. Optional.
-    test_run (bool): If True, a test run will be performed on a subset of URLs. If False, the entire dataset 
+    test_run (bool): If True, a test run will be performed on a subset of URLs. If False, the entire dataset
                       will be downloaded. Defaults to True.
     generate_report (bool): If True, an HTML report will be generated. Defaults to True.
     output_path (str): The directory where the output will be saved.
@@ -27,7 +27,7 @@ Configuration Options:
     gcp_storage (bool): If True, the data will be stored in a Google Cloud Bucket.
     gcp_credentials (str): The path to the Google Cloud credentials file. Optional.
     gcp_bucket_name (str): The name of the Google Cloud Bucket where the data will be stored. Optional.
-    gcp_blob_name (str): The name of the blob where the data will be stored in the Google Cloud Bucket. 
+    gcp_blob_name (str): The name of the blob where the data will be stored in the Google Cloud Bucket.
                          Defaults to 'landing_zone'.
 """
 
@@ -41,22 +41,22 @@ from road_data_scraper import __version__
 from road_data_scraper.main import run
 
 description = """
-The Road Data Scraper API is a straightforward tool designed to fetch and sanitize data from 
-the Highways England WebTRIS Traffic Flow API. This API allows you to tailor the data retrieval 
+The Road Data Scraper API is a straightforward tool designed to fetch and sanitize data from
+the Highways England WebTRIS Traffic Flow API. This API allows you to tailor the data retrieval
 process to your specific needs.
 
-Once processed, the cleaned data can be conveniently stored in a Google Cloud Bucket. 
+Once processed, the cleaned data can be conveniently stored in a Google Cloud Bucket.
 Alternatively, if you're running the API on your local machine, the data can be saved there.
 
-With this API, you can easily define the start and end dates for the data you wish to gather. 
-You also have the option to execute a test run – an ideal choice for those who want to ensure 
-everything runs smoothly before committing to a full data download. In addition, the API gives 
-you the choice to generate an HTML report, offering a comprehensive overview of the status of 
+With this API, you can easily define the start and end dates for the data you wish to gather.
+You also have the option to execute a test run – an ideal choice for those who want to ensure
+everything runs smoothly before committing to a full data download. In addition, the API gives
+you the choice to generate an HTML report, offering a comprehensive overview of the status of
 each road sensor, including MIDAS, TMU, and TAME.
 
 # How To Use
 
-Using the API is easy. All you need to do is send a GET request to the `/scrape/` endpoint with the configuration parameters you want. 
+Using the API is easy. All you need to do is send a GET request to the `/scrape/` endpoint with the configuration parameters you want.
 
 The configuration parameters include:
 
@@ -67,11 +67,11 @@ The configuration parameters include:
 - __gcp_storage__: True or False. Indicates whether you want to store the data in a Google Cloud Bucket.
 - __start_date__: The date you want to start scraping data from, formatted as %Y-%m-%d.
 - __end_date__: The date you want to stop scraping data at, formatted as %Y-%m-%d.
-- __gcp_credentials__: The path to your Google Cloud Platform credentials file. 
+- __gcp_credentials__: The path to your Google Cloud Platform credentials file.
 - __gcp_bucket_name__: The name of your Google Cloud Bucket.
 - __gcp_blob_name__: The name of the blob in your Google Cloud Bucket where the data will be stored. The default value is "landing_zone".
 
-For example, a request might look like this: 
+For example, a request might look like this:
 
 ```bash
 curl -X GET "http://localhost:8000/scrape/?test_run=True&generate_report=True&output_path=~/data/&rm_dir=False&gcp_storage=True&start_date=2022-01-01&end_date=2022-01-31&gcp_credentials=~/gcp_credentials.json&gcp_bucket_name=my_bucket&gcp_blob_name=landing_zone"
@@ -79,14 +79,14 @@ curl -X GET "http://localhost:8000/scrape/?test_run=True&generate_report=True&ou
 
 # API Response
 
-On successful execution of the scraping pipeline, the API returns a simple text message - 
-__"WebTRIS Scraping Pipeline Successfully Executed."__. In case of any errors during execution, 
+On successful execution of the scraping pipeline, the API returns a simple text message -
+__"WebTRIS Scraping Pipeline Successfully Executed."__. In case of any errors during execution,
 the API provides a relevant error message detailing what went wrong.
 
 # Error Handling
 
-The API comes equipped with built-in error handling mechanisms. If an error occurs during 
-the data scraping process, the API will retry the request. If the error persists, it will be logged, 
+The API comes equipped with built-in error handling mechanisms. If an error occurs during
+the data scraping process, the API will retry the request. If the error persists, it will be logged,
 and the API will move on to the next request. Errors and their corresponding details can be found in the API logs.
 
 
