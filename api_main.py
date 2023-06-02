@@ -30,7 +30,6 @@ Configuration Options:
     gcp_blob_name (str): The name of the blob where the data will be stored in the Google Cloud Bucket.
                          Defaults to 'landing_zone'.
 """
-
 from datetime import date
 from typing import Optional
 
@@ -88,7 +87,6 @@ the API provides a relevant error message detailing what went wrong.
 The API comes equipped with built-in error handling mechanisms. If an error occurs during
 the data scraping process, the API will retry the request. If the error persists, it will be logged,
 and the API will move on to the next request. Errors and their corresponding details can be found in the API logs.
-
 
 # Useful Links
 
