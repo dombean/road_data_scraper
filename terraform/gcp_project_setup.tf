@@ -105,3 +105,48 @@ resource "google_storage_bucket" "my_bucket" {
   name     = "${var.bucket_name}-${random_id.random_suffix.hex}"
   location = var.bucket_location
 }
+
+# Enable Compute Engine API on the project
+resource "google_project_service" "compute_api" {
+  # project where the API will be enabled
+  project = var.project_id
+
+  # service name of the API to be enabled
+  service = "compute.googleapis.com"
+
+  # this ensures that the API won't be disabled if this Terraform resource is destroyed
+  disable_on_destroy = false
+}
+
+# Fetch the default Compute Engine service account for the project
+data "google_compute_default_service_account" "default" {
+  # dependency on 'compute_api' ensures that the Compute Engine API is enabled before this block runs
+  depends_on = [google_project_service.compute_api]
+}
+
+# Grant the Secret Manager Secret Accessor role to the default Compute Engine service account
+resource "google_project_iam_member" "cloud_run_secret_accessor" {
+  # project where the IAM policy will be set
+  project = var.project_id
+
+  # role to be assigned
+  role = "roles/secretmanager.secretAccessor"
+
+  # service account to which the role will be assigned
+  member = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+
+  # dependency on 'default' ensures that the default Compute Engine service account is fetched before this block runs
+  depends_on = [data.google_compute_default_service_account.default]
+}
+
+# Wait for IAM policy changes to propagate
+resource "null_resource" "wait_permission_changes" {
+  # dependency on 'cloud_run_secret_accessor' ensures that the IAM policy changes are applied before this block runs
+  depends_on = [google_project_iam_member.cloud_run_secret_accessor]
+
+  # local-exec provisioner allows running a shell command on the machine where Terraform runs
+  provisioner "local-exec" {
+    # command to wait for 300 seconds (5 minutes)
+    command = "sleep 300"
+  }
+}
