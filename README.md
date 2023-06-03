@@ -36,6 +36,7 @@ The Road Data Scraper project has the following structure:
 │ │ └── report
 │ │ ├── report.py
 │ │ └── road_data_report_template.ipynb
+├── terraform
 ├── tests
 ├── requirements.txt
 ├── requirements_dev.txt
@@ -63,6 +64,7 @@ The project directory contains the following components:
 - `requirements.txt`: File listing the required Python packages for the project.
 - `requirements_dev.txt`: File listing additional development-specific requirements for the project.
 - `tox.ini`: Configuration file for running tests using the Tox testing tool.
+- `terraform/`: This directory contains Terraform templates for setting up a Google Cloud Project (GCP) with relevant services and service accounts. It helps in infrastructure automation and achieving IaC (Infrastructure as Code).
 - `tests`: Directory containing test files for the project.
 - `docs/`: Folder containing additional documentation files related to various aspects of the Road Data Scraper project, such as Docker build process, FastAPI with Firebase authentication, Google Cloud project setup, and more.
 - `README.md`: Documentation file providing an overview and instructions for using the Road Data Scraper.
