@@ -81,4 +81,3 @@ terraform destroy
 ```
 
 Enter `yes` when prompted to confirm the resource deletion.
-
