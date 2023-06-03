@@ -85,7 +85,8 @@ gcloud run deploy $service_name \
     --memory "16Gi" \
     --min-instances "1" \
     --max-instances "10" \
-    --concurrency "1"
+    --concurrency "1" \
+    --allow-unauthenticated
 
 # View the URL of the deployed service
 gcloud run services describe $service_name --region=$region --format="value(status.url)"
