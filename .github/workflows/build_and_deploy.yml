@@ -1,0 +1,41 @@
+name: Build and Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/build-push-action@v2
+
+      - name: Set up GCP credentials
+        run: |
+          echo '${{ secrets.GCP_CREDS }}' > gcp_creds.json
+
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDS }}
+          project_id: your-project-id
+
+      - name: Set GCP Project
+        run: |
+          gcloud config set project your-project-id
+
+      - name: Modify Script
+        run: |
+          sed -i 's/your-image-name/your-image-name/g' ./docker-build-and-deploy.sh
+          sed -i 's/your-project-id/your-project-id/g' ./docker-build-and-deploy.sh
+          sed -i 's/your-service-name/your-service-name/g' ./docker-build-and-deploy.sh
+
+          # Make the bash script executable
+          chmod +x ./docker-build-and-deploy.sh
+
+      - name: Build and Deploy
+        run: ./docker-build-and-deploy.sh cloud # Replace with your desired arguments
